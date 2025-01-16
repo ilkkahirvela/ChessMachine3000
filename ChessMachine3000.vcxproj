@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="chess.cpp" />
     <ClCompile Include="ChessMachine3000.cpp" />
     <ClCompile Include="position.cpp" />
   </ItemGroup>

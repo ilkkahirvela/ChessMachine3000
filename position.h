@@ -1,8 +1,10 @@
+#ifndef POSITION_H
+#define POSITION_H
 #pragma once
 #include "chess.h"
 
 // Pelin tilan kuvaaminen ja siihen liittyvät operaatiot.
-class Asema
+class Position
 {
 public:
 
@@ -12,7 +14,7 @@ public:
 	// [7][0] : vasen alanurkka ("a1")
 	// [7][7] : oikea alanurkka ("h1")
 	//
-	int _lauta[8][8] = {
+	int _board[8][8] = {
 		{ bR, bN, bB, bQ, bK, bB, bN, bR },
 		{ bP, bP, bP, bP, bP, bP, bP, bP },
 		{ NA, NA, NA, NA, NA, NA, NA, NA },
@@ -38,15 +40,19 @@ public:
 
 	// LÄKSY
 	// Tyhjentää laudan.
-	void tyhjenna();
+	void emptyBoard();
 
 	// LÄKSY
 	// Tulosta lauta ascii-grafiikkana (mahdollisesti flagit
 	// voisi myös tulostaa jotenkin siististi).
-	void tulosta() const;
+	// const funktion perään, miksi?
+	void printBoard() const;
 
 	// LÄKSY
 	// etsii annetun kuninkaan (wK tai mK) rivin ja linjan
-	void etsi_kuningas(int nappula, int& rivi, int& linja) const;
+	// const funktion perään, miksi?
+	void findKing(int nappula, int& rivi, int& linja);
 
 };
+
+#endif

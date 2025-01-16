@@ -1,19 +1,28 @@
-#include <iostream>
 #include "position.h"
 #include "chess.h"
+#include <iostream>
 
-void tyhjenna(Asema _lauta) {
+using namespace std;
+
+void Position::emptyBoard() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			_lauta[i][j]
+			_board[i][j] = NA;
 		}
 	}
 }
 
-void tulosta() {
-
+void Position::printBoard() const{
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			cout << pieceSymbol(_board[i][j]) << " ";
+			if (j == 7) {
+				cout << endl;
+			}
+		}
+	}
 }
 
-void etsi_kuningas(int nappula, int& rivi, int& linja) {
+void Position::findKing(int nappula, int& rivi, int& linja) {
 
 }

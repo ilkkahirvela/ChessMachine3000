@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+using namespace std;
 
 // Pelaajat.
 enum { VALKEA, MUSTA };
@@ -7,8 +10,10 @@ enum { VALKEA, MUSTA };
 // typedef .... nappula
 enum { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
 
+string pieceSymbol(int piece);
+
 // Palauttaa annetun nappulan värin (VALKEA, MUSTA).
-int nappulan_vari(int nappula);
+int pieceColor(int piece);
 
 // Palauttaa pelaajan vastustajan.
-int vastustaja(int pelaaja);
+int opponent(int player);
