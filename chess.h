@@ -4,15 +4,15 @@
 using namespace std;
 
 // Pelaajat.
-enum { VALKEA, MUSTA };
+enum { WHITE, BLACK };
 
 // Vakioarvot eri nappululoille (NA = tyhjä ruutu).
-// typedef .... nappula
-enum { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
+enum Pieces { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
 
-string pieceSymbol(int piece);
+// Palauttaa annetun nappulan tulostettavan muodon (valkoiset isolla, mustat pienellä, 12 = " ")
+string pieceIndicator(int piece);
 
-// Palauttaa annetun nappulan värin (VALKEA, MUSTA).
+// Palauttaa annetun nappulan värin (VALKEA, MUSTA)
 int pieceColor(int piece);
 
 // Palauttaa pelaajan vastustajan.

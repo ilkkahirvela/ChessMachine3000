@@ -1,5 +1,3 @@
-#ifndef POSITION_H
-#define POSITION_H
 #pragma once
 #include "chess.h"
 
@@ -8,7 +6,7 @@ class Position
 {
 public:
 
-	// Laudan nappulat. Indeksointi [rivi][linja], esim.
+	// [rivi][linja]
 	//
 	// [0][0] : vasen ylänurkka ("a8")
 	// [7][0] : vasen alanurkka ("a1")
@@ -25,11 +23,9 @@ public:
 		{ wR, wN, wB, wQ, wK, wB, wN, wR }
 	};
 
-	// Kumman pelaajan siirtovuoro?
-	int _siirtovuoro = VALKEA;
+	int _siirtovuoro = WHITE;
 
 	// Kirjanpito siitä, onko kuningas tai torni liikkunut.
-	// Asetetaan tarpeen mukaan falseksi.
 	bool _valkea_lyhyt_linna_sallittu = true;
 	bool _valkea_pitka_linna_sallittu = true;
 	bool _musta_lyhyt_linna_sallittu = true;
@@ -38,21 +34,14 @@ public:
 	// Ohestalyöntiin tarvittava info.
 	int _kaksoisaskel_linjalla = -1;
 
-	// LÄKSY
 	// Tyhjentää laudan.
 	void emptyBoard();
 
-	// LÄKSY
 	// Tulosta lauta ascii-grafiikkana (mahdollisesti flagit
 	// voisi myös tulostaa jotenkin siististi).
-	// const funktion perään, miksi?
 	void printBoard() const;
 
-	// LÄKSY
 	// etsii annetun kuninkaan (wK tai mK) rivin ja linjan
-	// const funktion perään, miksi?
-	void findKing(int nappula, int& rivi, int& linja);
+	void findKing(int piece, int& row, int& column) const;
 
 };
-
-#endif

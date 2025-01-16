@@ -6,8 +6,18 @@ using namespace std;
 
 int main()
 {
-	Position pos;
-	pos.printBoard();
+    Position position;
 
-	return 0;
+    position.printBoard();
+
+    //// Kuninkaan sijainti
+    //int row, column;
+
+    //position.findKing(wK, row, column);
+
+    //if (row != -1 && column != -1) {
+    //    cout << "Valkoinen kuningas sijainnissa: (" << row << ", " << column << ")";
+    //}
+
+    return 0;
 }
