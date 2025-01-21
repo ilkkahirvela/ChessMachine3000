@@ -1,10 +1,16 @@
 #pragma once
+#include <vector>
 #include "chess.h"
 #include "move.h"
+
+using namespace std;
 
 // Pelin tilan kuvaaminen ja siihen liittyv‰t operaatiot.
 class Position
 {
+private:
+	bool isBlocked(int row, int column, int color);
+
 public:
 
 	// [rivi][linja]
@@ -24,7 +30,7 @@ public:
 		{ wR, wN, wB, wQ, wK, wB, wN, wR }
 	};
 
-	int _siirtovuoro = WHITE;
+	int _moveturn = WHITE;
 
 	// Kirjanpito siit‰, onko kuningas tai torni liikkunut.
 	bool _valkea_lyhyt_linna_sallittu = true;
@@ -37,6 +43,8 @@ public:
 
 	// Tekee annetun siirron laudalla. Voidaan olettaa, ett‰ siirto on laillinen.
 	void movePiece(int startR, int startC, int endR, int endC);
+
+	vector<int> getRookMoves(int row, int column);
 
 	// Tyhjent‰‰ laudan.
 	void emptyBoard();

@@ -21,8 +21,7 @@ public:
 
 	// Konstruktori, jonka avulla siirto-olio alustetaan
 	// annetusta merkkijonosta, esim. "e2e4" tai "g8f6".
-	Move(const string& m)
-	{}
+	Move(const string& m) {}
 
 
 private:
@@ -36,5 +35,5 @@ private:
 	int _korotettava_nappula = NA; // esim. wQ, wR, bN jne.
 	bool _ohestalyonti = false;
 
-	friend class Asema;
+	friend class Position;
 };

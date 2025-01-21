@@ -8,22 +8,28 @@ int main()
 {
     Position position;
 
+    string move1 = "a1e4";
+    auto coords1 = uciToCoords(move1);
+
+    position.movePiece(coords1.first.first, coords1.first.second, coords1.second.first, coords1.second.second);
     position.printBoard();
 
-    string move = "e2e4";
-    auto coords = UciToCoords(move);
+    string move = "e4e5";
+    auto coords = uciToCoords(move);
 
-    position.movePiece(coords.first.first, coords.first.second, coords.second.first, coords.second.second);
-    position.printBoard();
+    int endCoords = coords.second.first * 10 + coords.second.second;
 
-    //// Kuninkaan sijainti
-    //int row, column;
+    vector<int> rookMoves = position.getRookMoves(coords.first.first, coords.first.second);
+    
+    for (int move : rookMoves) {
+        cout << move << " ";
+    }
 
-    //position.findKing(wK, row, column);
+    string uciMoves = coordsToUci(rookMoves);
 
-    //if (row != -1 && column != -1) {
-    //    cout << "Valkoinen kuningas sijainnissa: (" << row << ", " << column << ")";
-    //}
+    cout << endl << "The UCI moves are: " << uciMoves << endl;
+
+    cout << endCoords;
 
     return 0;
 }

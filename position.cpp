@@ -2,6 +2,7 @@
 #include "chess.h"
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 using namespace std;
 
@@ -9,6 +10,41 @@ void Position::movePiece(int startR, int startC, int endR, int endC) {
     int piece = _board[startR][startC];
     _board[startR][startC] = NA;
     _board[endR][endC] = piece;
+}
+
+bool isBlocked(int row, int column, int color) {
+    if (pieceColor(row, column) == color) {
+        return true;
+    }
+    else if (pieceColor(row, column) != color) {
+        return true;
+    }
+    return false;
+}
+
+vector<int> Position::getRookMoves(int row, int column) {
+    vector<int> moves;
+    int color = _moveturn;
+
+    for (int r = row - 1; r >= 0; --r) { // Move up
+        if (isBlocked(r, column, color)) break;
+        moves.push_back(r * 10 + column);
+    }
+    for (int r = row + 1; r < 8; ++r) { // Move down
+        if (isBlocked(r, column, color)) break;
+        moves.push_back(r * 10 + column);
+    }
+
+    for (int c = column - 1; c >= 0; --c) { // Move left
+        if (isBlocked(row, c, color)) break;
+        moves.push_back(row * 10 + c);
+    }
+    for (int c = column + 1; c < 8; ++c) { // Move right
+        if (isBlocked(row, c, color)) break;
+        moves.push_back(row * 10 + c);
+    }
+
+    return moves;
 }
 
 void Position::emptyBoard() {

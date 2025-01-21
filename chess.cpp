@@ -2,6 +2,8 @@
 #include "chess.h"
 #include <iostream>
 #include <utility>
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -14,7 +16,7 @@ string pieceIndicator(int piece) {
     return pieceIndicators[piece];
 }
 
-pair<pair<int, int>, pair<int, int>> UciToCoords(const string& move) {
+pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move) {
     auto getCoords = [](char file, char rank) -> pair<int, int> {
         return { 8 - (rank - '0'), file - 'a' }; // rank to row, file to column
         };
@@ -23,6 +25,25 @@ pair<pair<int, int>, pair<int, int>> UciToCoords(const string& move) {
     pair<int, int> to = getCoords(move[2], move[3]);
 
     return { from, to };
+}
+
+string coordsToUci(const vector<int>& moves) {
+    auto getMove = [](int row, int col) -> string {
+        char file = col + 'a';
+        char rank = '8' - row;
+        return { file, rank };
+        };
+
+    string uciMoves = "";
+    for (int move : moves) {
+        int row = move / 10;
+        int col = move % 10;
+
+        string uciMove = getMove(row, col);
+        uciMoves += uciMove + " ";
+    }
+
+    return uciMoves;
 }
 
 // Kertoo nappulan värin

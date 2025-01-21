@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="chess.cpp" />
     <ClCompile Include="ChessMachine3000.cpp" />
+    <ClCompile Include="move.cpp" />
     <ClCompile Include="position.cpp" />
   </ItemGroup>
   <ItemGroup>
