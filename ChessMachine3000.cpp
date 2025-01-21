@@ -8,13 +8,13 @@ int main()
 {
     Position position;
 
-    string move1 = "a1e4";
+    string move1 = "a1e5";
     auto coords1 = uciToCoords(move1);
 
     position.movePiece(coords1.first.first, coords1.first.second, coords1.second.first, coords1.second.second);
     position.printBoard();
 
-    string move = "e4e5";
+    string move = "e5e6";
     auto coords = uciToCoords(move);
 
     int endCoords = coords.second.first * 10 + coords.second.second;

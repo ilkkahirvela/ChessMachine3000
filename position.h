@@ -9,7 +9,7 @@ using namespace std;
 class Position
 {
 private:
-	bool isBlocked(int row, int column, int color);
+	bool isBlocked(int row, int column);
 
 public:
 
@@ -40,6 +40,8 @@ public:
 
 	// Ohestalyöntiin tarvittava info.
 	int _kaksoisaskel_linjalla = -1;
+
+	int pieceColor(int row, int column) const;
 
 	// Tekee annetun siirron laudalla. Voidaan olettaa, että siirto on laillinen.
 	void movePiece(int startR, int startC, int endR, int endC);

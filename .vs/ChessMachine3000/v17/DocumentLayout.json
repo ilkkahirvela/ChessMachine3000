@@ -1,30 +1,30 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\",
+  "WorkspaceRootPath": "G:\\VisualStudioProjects\\ChessMachine3000\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\position.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:position.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\ChessMachine3000.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|G:\\VisualStudioProjects\\ChessMachine3000\\ChessMachine3000.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:ChessMachine3000.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\chess.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|G:\\VisualStudioProjects\\ChessMachine3000\\move.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:move.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|G:\\VisualStudioProjects\\ChessMachine3000\\chess.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:chess.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\chess.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|G:\\VisualStudioProjects\\ChessMachine3000\\chess.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:chess.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\position.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:position.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|G:\\VisualStudioProjects\\ChessMachine3000\\position.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:position.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\move.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:move.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|G:\\VisualStudioProjects\\ChessMachine3000\\position.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2491EE9E-38F0-444F-AE8A-DC3D5A157355}|ChessMachine3000.vcxproj|solutionrelative:position.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,15 +34,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 184,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
               "Title": "move.h",
-              "DocumentMoniker": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\move.h",
+              "DocumentMoniker": "G:\\VisualStudioProjects\\ChessMachine3000\\move.h",
               "RelativeDocumentMoniker": "move.h",
-              "ToolTip": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\move.h",
+              "ToolTip": "G:\\VisualStudioProjects\\ChessMachine3000\\move.h",
               "RelativeToolTip": "move.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
@@ -51,26 +51,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "position.h",
-              "DocumentMoniker": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\position.h",
+              "DocumentMoniker": "G:\\VisualStudioProjects\\ChessMachine3000\\position.h",
               "RelativeDocumentMoniker": "position.h",
-              "ToolTip": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\position.h",
+              "ToolTip": "G:\\VisualStudioProjects\\ChessMachine3000\\position.h",
               "RelativeToolTip": "position.h",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAABIAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACUAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-01-16T10:44:48.571Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "position.cpp",
-              "DocumentMoniker": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\position.cpp",
+              "DocumentMoniker": "G:\\VisualStudioProjects\\ChessMachine3000\\position.cpp",
               "RelativeDocumentMoniker": "position.cpp",
-              "ToolTip": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\position.cpp",
+              "ToolTip": "G:\\VisualStudioProjects\\ChessMachine3000\\position.cpp",
               "RelativeToolTip": "position.cpp",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAACAAAAA0AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADsAAABSAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-01-16T11:37:35.578Z",
               "EditorCaption": ""
@@ -79,11 +79,11 @@
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "chess.h",
-              "DocumentMoniker": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\chess.h",
+              "DocumentMoniker": "G:\\VisualStudioProjects\\ChessMachine3000\\chess.h",
               "RelativeDocumentMoniker": "chess.h",
-              "ToolTip": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\chess.h",
+              "ToolTip": "G:\\VisualStudioProjects\\ChessMachine3000\\chess.h",
               "RelativeToolTip": "chess.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-01-16T10:46:08.586Z",
               "EditorCaption": ""
@@ -92,24 +92,24 @@
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "chess.cpp",
-              "DocumentMoniker": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\chess.cpp",
+              "DocumentMoniker": "G:\\VisualStudioProjects\\ChessMachine3000\\chess.cpp",
               "RelativeDocumentMoniker": "chess.cpp",
-              "ToolTip": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\chess.cpp",
+              "ToolTip": "G:\\VisualStudioProjects\\ChessMachine3000\\chess.cpp",
               "RelativeToolTip": "chess.cpp",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAACoAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAADAAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-01-16T13:01:17.329Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "ChessMachine3000.cpp",
-              "DocumentMoniker": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\ChessMachine3000.cpp",
+              "DocumentMoniker": "G:\\VisualStudioProjects\\ChessMachine3000\\ChessMachine3000.cpp",
               "RelativeDocumentMoniker": "ChessMachine3000.cpp",
-              "ToolTip": "C:\\Users\\ilehi\\source\\repos\\ChessMachine3000\\ChessMachine3000.cpp",
+              "ToolTip": "G:\\VisualStudioProjects\\ChessMachine3000\\ChessMachine3000.cpp",
               "RelativeToolTip": "ChessMachine3000.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-01-16T10:42:36.152Z",
               "EditorCaption": ""

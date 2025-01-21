@@ -6,41 +6,83 @@
 
 using namespace std;
 
+int Position::pieceColor(int row, int column) const {
+    int piece = _board[row][column];
+
+    if (piece >= wR && piece <= wP) {
+        return WHITE;
+    }
+    if (piece >= bR && piece <= bP) {
+        return BLACK;
+    }
+    return -1;  // Empty square or invalid piece
+}
+
 void Position::movePiece(int startR, int startC, int endR, int endC) {
     int piece = _board[startR][startC];
     _board[startR][startC] = NA;
     _board[endR][endC] = piece;
 }
 
-bool isBlocked(int row, int column, int color) {
-    if (pieceColor(row, column) == color) {
+bool Position::isBlocked(int row, int column) {
+    int piece = _board[row][column];
+    int player = _moveturn;
+
+    if (pieceColor(row, column) == -1) { // Empty square
+        return false;
+    }
+    else if (pieceColor(row, column) == player) { // Friendly piece
         return true;
     }
-    else if (pieceColor(row, column) != color) {
-        return true;
+    else { // Enemy piece
+        return true;  // Block after first enemy piece
     }
-    return false;
 }
 
 vector<int> Position::getRookMoves(int row, int column) {
     vector<int> moves;
-    int color = _moveturn;
 
-    for (int r = row - 1; r >= 0; --r) { // Move up
-        if (isBlocked(r, column, color)) break;
+    // Move up
+    for (int r = row - 1; r >= 0; --r) {
+        if (isBlocked(r, column)) {
+            if (pieceColor(r, column) != _moveturn && pieceColor(r, column) != -1) {
+                moves.push_back(r * 10 + column); // Capture the first enemy piece
+            }
+            break;
+        }
         moves.push_back(r * 10 + column);
     }
-    for (int r = row + 1; r < 8; ++r) { // Move down
-        if (isBlocked(r, column, color)) break;
+
+    // Move down
+    for (int r = row + 1; r < 8; ++r) {
+        if (isBlocked(r, column)) {
+            if (pieceColor(r, column) != _moveturn && pieceColor(r, column) != -1) {
+                moves.push_back(r * 10 + column); // Capture the first enemy piece
+            }
+            break;
+        }
         moves.push_back(r * 10 + column);
     }
 
-    for (int c = column - 1; c >= 0; --c) { // Move left
-        if (isBlocked(row, c, color)) break;
+    // Move left
+    for (int c = column - 1; c >= 0; --c) {
+        if (isBlocked(row, c)) {
+            if (pieceColor(row, c) != _moveturn && pieceColor(row, c) != -1) {
+                moves.push_back(row * 10 + c); // Capture the first enemy piece
+            }
+            break;
+        }
         moves.push_back(row * 10 + c);
     }
-    for (int c = column + 1; c < 8; ++c) { // Move right
-        if (isBlocked(row, c, color)) break;
+
+    // Move right
+    for (int c = column + 1; c < 8; ++c) {
+        if (isBlocked(row, c)) {
+            if (pieceColor(row, c) != _moveturn && pieceColor(row, c) != -1) {
+                moves.push_back(row * 10 + c); // Capture the first enemy piece
+            }
+            break;
+        }
         moves.push_back(row * 10 + c);
     }
 

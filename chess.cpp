@@ -46,17 +46,6 @@ string coordsToUci(const vector<int>& moves) {
     return uciMoves;
 }
 
-// Kertoo nappulan värin
-int pieceColor(int piece) {
-    if (piece >= wR && piece <= wP) {
-        return WHITE;
-    }
-    if (piece >= bR && piece <= bP) {
-        return BLACK;
-    }
-    return -1;  // Invalid piece
-}
-
 // Kertoo pelaajan vastustajan värin
 int opponent(int player) {
     if (player == WHITE) {

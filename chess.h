@@ -17,8 +17,5 @@ pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move);
 
 string coordsToUci(const vector<int>& moves);
 
-// Palauttaa annetun nappulan värin (VALKEA, MUSTA)
-int pieceColor(int piece);
-
 // Palauttaa pelaajan vastustajan.
 int opponent(int player);
