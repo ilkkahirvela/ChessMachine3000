@@ -1,2 +1,5 @@
-﻿  position.cpp
-  ChessMachine3000.vcxproj -> G:\VisualStudioProjects\ChessMachine3000\x64\Debug\ChessMachine3000.exe
+﻿  chess.cpp
+  ChessMachine3000.cpp
+  position.cpp
+  Generating Code...
+  ChessMachine3000.vcxproj -> C:\Users\ilehi\source\repos\ChessMachine3000\x64\Debug\ChessMachine3000.exe

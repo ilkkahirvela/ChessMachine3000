@@ -35,13 +35,13 @@ void Position::printBoard() const {
         cout << 8 - r << " | ";
 
         for (int c = 0; c < boardSize; c++) {
-            // Print each piece with fixed width for alignment and vertical separators
+            // Print each piece with fixed width
             cout << setw(2) << pieceIndicator(_board[r][c]) << " |";
         }
 
         cout << endl;
 
-        // Add horizontal line between rows, except after the last row
+        // Add horizontal line between rows
         if (r < boardSize - 1) {
             cout << "  +";
             for (int i = 0; i < boardSize; i++) {
