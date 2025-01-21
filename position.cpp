@@ -5,6 +5,12 @@
 
 using namespace std;
 
+void Position::movePiece(int startR, int startC, int endR, int endC) {
+    int piece = _board[startR][startC];
+    _board[startR][startC] = NA;
+    _board[endR][endC] = piece;
+}
+
 void Position::emptyBoard() {
 	for (int r = 0; r < 8; r++) {
 		for (int c = 0; c < 8; c++) {
@@ -74,9 +80,4 @@ void Position::findKing(int piece, int& row, int& column) const
             }
         }
     }
-
-    // Jos kuningasta ei löydy
-    row = -1;
-    column = -1;
 }
-

@@ -10,6 +10,12 @@ int main()
 
     position.printBoard();
 
+    string move = "e2e4";
+    auto coords = UciToCoords(move);
+
+    position.movePiece(coords.first.first, coords.first.second, coords.second.first, coords.second.second);
+    position.printBoard();
+
     //// Kuninkaan sijainti
     //int row, column;
 

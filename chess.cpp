@@ -1,6 +1,7 @@
 #include "position.h"
 #include "chess.h"
 #include <iostream>
+#include <utility>
 
 using namespace std;
 
@@ -11,6 +12,17 @@ string pieceIndicator(int piece) {
     " "
     };
     return pieceIndicators[piece];
+}
+
+pair<pair<int, int>, pair<int, int>> UciToCoords(const string& move) {
+    auto getCoords = [](char file, char rank) -> pair<int, int> {
+        return { 8 - (rank - '0'), file - 'a' }; // rank to row, file to column
+        };
+
+    pair<int, int> from = getCoords(move[0], move[1]);
+    pair<int, int> to = getCoords(move[2], move[3]);
+
+    return { from, to };
 }
 
 // Kertoo nappulan värin

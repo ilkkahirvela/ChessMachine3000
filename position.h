@@ -1,5 +1,6 @@
 #pragma once
 #include "chess.h"
+#include "move.h"
 
 // Pelin tilan kuvaaminen ja siihen liittyvät operaatiot.
 class Position
@@ -34,11 +35,13 @@ public:
 	// Ohestalyöntiin tarvittava info.
 	int _kaksoisaskel_linjalla = -1;
 
+	// Tekee annetun siirron laudalla. Voidaan olettaa, että siirto on laillinen.
+	void movePiece(int startR, int startC, int endR, int endC);
+
 	// Tyhjentää laudan.
 	void emptyBoard();
 
-	// Tulosta lauta ascii-grafiikkana (mahdollisesti flagit
-	// voisi myös tulostaa jotenkin siististi).
+	// Tulostaa laudan ascii-grafiikkana
 	void printBoard() const;
 
 	// etsii annetun kuninkaan (wK tai mK) rivin ja linjan
