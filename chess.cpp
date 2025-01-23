@@ -18,7 +18,9 @@ string pieceIndicator(int piece) {
 
 pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move) {
     auto getCoords = [](char file, char rank) -> pair<int, int> {
-        return { 8 - (rank - '0'), file - 'a' }; // rank to row, file to column
+        int row = 8 - (rank - '0');
+        int col = file - 'a';
+        return { row, col };
         };
 
     pair<int, int> from = getCoords(move[0], move[1]);
@@ -27,7 +29,7 @@ pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move) {
     return { from, to };
 }
 
-string coordsToUci(const vector<int>& moves) {
+string coordsToUci(const vector<Move>& moves) {
     auto getMove = [](int row, int col) -> string {
         char file = col + 'a';
         char rank = '8' - row;
@@ -35,12 +37,11 @@ string coordsToUci(const vector<int>& moves) {
         };
 
     string uciMoves = "";
-    for (int move : moves) {
-        int row = move / 10;
-        int col = move % 10;
+    for (const auto& move : moves) {
+        string from = getMove(move.startRow, move.startCol);
+        string to = getMove(move.endRow, move.endCol);
 
-        string uciMove = getMove(row, col);
-        uciMoves += uciMove + " ";
+        uciMoves += from + to + " ";
     }
 
     return uciMoves;

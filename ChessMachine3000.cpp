@@ -1,35 +1,78 @@
-#include "chess.h"
-#include "position.h"
 #include <iostream>
+#include <vector>
+#include <string>
+#include "chess.h"
+#include "move.h"
+#include "position.h"
 
 using namespace std;
 
-int main()
-{
+// Test program for valid queen moves
+int main() {
     Position position;
 
-    string move1 = "d1e5";
-    auto coords1 = uciToCoords(move1);
+    // Queen starts at d1
+    int row = 7;
+    int col = 3;
 
-    position.movePiece(coords1.first.first, coords1.first.second, coords1.second.first, coords1.second.second);
-    position.printBoard();
+    // Loop for queen's moves
+    while (true) {
+        cout << "Current Board:" << endl;
+        position.printBoard();
+        cout << endl;
 
-    string move = "e5e6";
-    auto coords = uciToCoords(move);
+        // Get possible moves for the queen
+        vector<Move> queenMoves = position.getQueenMoves(row, col);
 
-    int endCoords = coords.second.first * 10 + coords.second.second;
+        // Print out moves in UCI format, removed in final version for performance??
+        cout << "Possible moves for the Queen at " << (char)(col + 'a') << (8 - row) << ":" << endl;
+        string uciQueenMoves = coordsToUci(queenMoves);
+        cout << uciQueenMoves << endl;
 
-    vector<int> rookMoves = position.getQueenMoves(coords.first.first, coords.first.second);
-    
-    for (int move : rookMoves) {
-        cout << move << " ";
+        string move;
+        bool validMove = false;
+
+        // Process UCI move input
+        while (true) {
+            cout << "Enter your move in UCI format or 'q' to quit: ";
+            cin >> move;
+
+            if (move == "q") {
+                cout << "Exiting the game." << endl;
+                return 0;
+            }
+
+            // Convert UCI move to coordinates
+            auto coords = uciToCoords(move);
+            int startRow = coords.first.first;
+            int startCol = coords.first.second;
+            int endRow = coords.second.first;
+            int endCol = coords.second.second;
+
+            // Validate move
+            validMove = false;
+            for (const auto& queenMove : queenMoves) {
+                if (queenMove.endRow == endRow && queenMove.endCol == endCol) {
+                    validMove = true;
+                    break;
+                }
+            }
+
+            if (validMove) {
+                // Move queen and update position
+                position.movePiece(startRow, startCol, endRow, endCol);
+                row = endRow;
+                col = endCol;
+
+                // Get new possible moves for the queen
+                queenMoves = position.getQueenMoves(row, col);
+                break;
+            }
+            else {
+                cout << "Invalid move. Try again." << endl;
+            }
+        }
     }
-
-    string uciMoves = coordsToUci(rookMoves);
-
-    cout << endl << "The UCI moves are: " << uciMoves << endl;
-
-    cout << endCoords;
 
     return 0;
 }

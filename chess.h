@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "move.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ string pieceIndicator(int piece);
 
 pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move);
 
-string coordsToUci(const vector<int>& moves);
+string coordsToUci(const vector<Move>& moves);
 
 // Palauttaa pelaajan vastustajan.
 int opponent(int player);
