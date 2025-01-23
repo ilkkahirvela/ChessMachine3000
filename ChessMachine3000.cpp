@@ -8,7 +8,7 @@ int main()
 {
     Position position;
 
-    string move1 = "a1e5";
+    string move1 = "d1e5";
     auto coords1 = uciToCoords(move1);
 
     position.movePiece(coords1.first.first, coords1.first.second, coords1.second.first, coords1.second.second);
@@ -19,7 +19,7 @@ int main()
 
     int endCoords = coords.second.first * 10 + coords.second.second;
 
-    vector<int> rookMoves = position.getRookMoves(coords.first.first, coords.first.second);
+    vector<int> rookMoves = position.getQueenMoves(coords.first.first, coords.first.second);
     
     for (int move : rookMoves) {
         cout << move << " ";

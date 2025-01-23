@@ -24,68 +24,109 @@ void Position::movePiece(int startR, int startC, int endR, int endC) {
     _board[endR][endC] = piece;
 }
 
-bool Position::isBlocked(int row, int column) {
-    int piece = _board[row][column];
-    int player = _moveturn;
+// Not currently in use
+//bool Position::isBlocked(int row, int column) {
+//    int piece = _board[row][column];
+//    int player = _moveturn;
+//
+//    if (pieceColor(row, column) == -1) { // Empty square
+//        return false;
+//    }
+//    else if (pieceColor(row, column) == player) { // Friendly piece
+//        return true;
+//    }
+//    else { // Enemy piece
+//        return true;  // Block after first enemy piece
+//    }
+//}
 
-    if (pieceColor(row, column) == -1) { // Empty square
-        return false;
+vector<int> Position::getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions) {
+    vector<int> moves;
+
+    for (const auto& dir : directions) {
+        int r = row + dir.first;
+        int c = column + dir.second;
+
+        while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int piece = pieceColor(r, c);
+
+            if (piece != -1) {  // There's a piece at this position
+                if (piece != _moveturn) {
+                    moves.push_back(r * 10 + c);  // Capture enemy piece
+                }
+                break;  // Stop moving in this direction
+            }
+
+            moves.push_back(r * 10 + c);
+            r += dir.first;
+            c += dir.second;
+        }
     }
-    else if (pieceColor(row, column) == player) { // Friendly piece
-        return true;
-    }
-    else { // Enemy piece
-        return true;  // Block after first enemy piece
-    }
+
+    return moves;
 }
 
 vector<int> Position::getRookMoves(int row, int column) {
+    static const vector<pair<int, int>> rookDirections = {
+        {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+    };
+    return getDirectionalMoves(row, column, rookDirections);
+}
+
+vector<int> Position::getBishopMoves(int row, int column) {
+    static const vector<pair<int, int>> bishopDirections = {
+        {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+    };
+    return getDirectionalMoves(row, column, bishopDirections);
+}
+
+vector<int> Position::getQueenMoves(int row, int column) {
+    static const vector<pair<int, int>> queenDirections = {
+        {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+        {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+    };
+    return getDirectionalMoves(row, column, queenDirections);
+}
+
+vector<int> Position::getKingMoves(int row, int column) {
+    static const vector<pair<int, int>> kingMoves = {
+        {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+        {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+    };
+
     vector<int> moves;
+    for (const auto& move : kingMoves) {
+        int r = row + move.first;
+        int c = column + move.second;
 
-    // Move up
-    for (int r = row - 1; r >= 0; --r) {
-        if (isBlocked(r, column)) {
-            if (pieceColor(r, column) != _moveturn && pieceColor(r, column) != -1) {
-                moves.push_back(r * 10 + column); // Capture the first enemy piece
+        if (r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int piece = pieceColor(r, c);
+            if (piece == -1 || piece != _moveturn) {
+                moves.push_back(r * 10 + c);
             }
-            break;
         }
-        moves.push_back(r * 10 + column);
     }
+    return moves;
+}
 
-    // Move down
-    for (int r = row + 1; r < 8; ++r) {
-        if (isBlocked(r, column)) {
-            if (pieceColor(r, column) != _moveturn && pieceColor(r, column) != -1) {
-                moves.push_back(r * 10 + column); // Capture the first enemy piece
+vector<int> Position::getKnightMoves(int row, int column) {
+    static const vector<pair<int, int>> knightMoves = {
+        {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
+        {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
+    };
+
+    vector<int> moves;
+    for (const auto& move : knightMoves) {
+        int r = row + move.first;
+        int c = column + move.second;
+
+        if (r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int piece = pieceColor(r, c);
+            if (piece == -1 || piece != _moveturn) {
+                moves.push_back(r * 10 + c);
             }
-            break;
         }
-        moves.push_back(r * 10 + column);
     }
-
-    // Move left
-    for (int c = column - 1; c >= 0; --c) {
-        if (isBlocked(row, c)) {
-            if (pieceColor(row, c) != _moveturn && pieceColor(row, c) != -1) {
-                moves.push_back(row * 10 + c); // Capture the first enemy piece
-            }
-            break;
-        }
-        moves.push_back(row * 10 + c);
-    }
-
-    // Move right
-    for (int c = column + 1; c < 8; ++c) {
-        if (isBlocked(row, c)) {
-            if (pieceColor(row, c) != _moveturn && pieceColor(row, c) != -1) {
-                moves.push_back(row * 10 + c); // Capture the first enemy piece
-            }
-            break;
-        }
-        moves.push_back(row * 10 + c);
-    }
-
     return moves;
 }
 
@@ -100,21 +141,21 @@ void Position::emptyBoard() {
 void Position::printBoard() const {
     const int boardSize = 8;
 
-    // Print the file labels
+    // File labels
     cout << "    ";
     for (char file = 'a'; file <= 'h'; ++file) {
         cout << file << "   ";  // Spacing between file labels
     }
     cout << endl;
 
-    // Print the top border line
+    // Top border line
     cout << "  +";
     for (int i = 0; i < boardSize; i++) {
         cout << "----";
     }
     cout << "+" << endl;
 
-    // Print the board rows
+    // Board rows
     for (int r = 0; r < boardSize; r++) {
         cout << 8 - r << " | ";
 
@@ -125,7 +166,7 @@ void Position::printBoard() const {
 
         cout << endl;
 
-        // Add horizontal line between rows
+        // Horizontal lines between rows
         if (r < boardSize - 1) {
             cout << "  +";
             for (int i = 0; i < boardSize; i++) {
@@ -145,7 +186,6 @@ void Position::printBoard() const {
 
 void Position::findKing(int piece, int& row, int& column) const
 {
-    // Etsitään kuningasta koko laudalta
     for (int r = 0; r < 8; ++r)
     {
         for (int c = 0; c < 8; ++c)

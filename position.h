@@ -9,7 +9,7 @@ using namespace std;
 class Position
 {
 private:
-	bool isBlocked(int row, int column);
+	// bool isBlocked(int row, int column);
 
 public:
 
@@ -46,7 +46,17 @@ public:
 	// Tekee annetun siirron laudalla. Voidaan olettaa, ett‰ siirto on laillinen.
 	void movePiece(int startR, int startC, int endR, int endC);
 
+	vector<int> getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions);
+
 	vector<int> getRookMoves(int row, int column);
+
+	vector<int> getBishopMoves(int row, int column);
+
+	vector<int> getQueenMoves(int row, int column);
+
+	vector<int> getKingMoves(int row, int column);
+
+	vector<int> getKnightMoves(int row, int column);
 
 	// Tyhjent‰‰ laudan.
 	void emptyBoard();
