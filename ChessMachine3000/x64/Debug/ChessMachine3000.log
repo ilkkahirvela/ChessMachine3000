@@ -1,2 +1,6 @@
 ﻿  ChessMachine3000.cpp
+  chess.cpp
+  move.cpp
+  position.cpp
+  Generating Code...
   ChessMachine3000.vcxproj -> G:\VisualStudioProjects\ChessMachine3000\x64\Debug\ChessMachine3000.exe

@@ -2,13 +2,18 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
+
 // Constructor to initialize move
 Move::Move(int startRow, int startCol, int endRow, int endCol)
     : startRow(startRow), startCol(startCol), endRow(endRow), endCol(endCol) {
 }
 
-// Utility method to return move as a string
 string Move::toString() const {
-    return to_string(startRow) + "," + to_string(startCol) + " -> " +
-        to_string(endRow) + "," + to_string(endCol);
+    char startFile = 'a' + startCol;
+    char endFile = 'a' + endCol;
+    int startRank = 8 - startRow;
+    int endRank = 8 - endRow;
+    return string(1, startFile) + to_string(startRank) +
+        string(1, endFile) + to_string(endRank);
 }

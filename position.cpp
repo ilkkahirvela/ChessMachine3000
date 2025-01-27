@@ -24,9 +24,7 @@ void Position::movePiece(int startR, int startC, int endR, int endC) {
     _board[endR][endC] = piece;
 }
 
-vector<Move> Position::getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions) {
-    vector<Move> moves;
-
+void Position::getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const {
     for (const auto& dir : directions) {
         int r = row + dir.first;
         int c = column + dir.second;
@@ -46,39 +44,36 @@ vector<Move> Position::getDirectionalMoves(int row, int column, const vector<pai
             c += dir.second;
         }
     }
-
-    return moves;
 }
 
-vector<Move> Position::getRookMoves(int row, int column) {
+void Position::getRookMoves(int row, int column, vector<Move>& moves) const {
     static const vector<pair<int, int>> rookDirections = {
         {-1, 0}, {1, 0}, {0, -1}, {0, 1}
     };
-    return getDirectionalMoves(row, column, rookDirections);
+    getDirectionalMoves(row, column, rookDirections, moves);
 }
 
-vector<Move> Position::getBishopMoves(int row, int column) {
+void Position::getBishopMoves(int row, int column, vector<Move>& moves) const {
     static const vector<pair<int, int>> bishopDirections = {
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
     };
-    return getDirectionalMoves(row, column, bishopDirections);
+    getDirectionalMoves(row, column, bishopDirections, moves);
 }
 
-vector<Move> Position::getQueenMoves(int row, int column) {
+void Position::getQueenMoves(int row, int column, vector<Move>& moves) const {
     static const vector<pair<int, int>> queenDirections = {
         {-1, 0}, {1, 0}, {0, -1}, {0, 1},
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
     };
-    return getDirectionalMoves(row, column, queenDirections);
+    getDirectionalMoves(row, column, queenDirections, moves);
 }
 
-vector<Move> Position::getKingMoves(int row, int column) {
+void Position::getKingMoves(int row, int column, vector<Move>& moves) const {
     static const vector<pair<int, int>> kingMoves = {
         {-1, 0}, {1, 0}, {0, -1}, {0, 1},
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
     };
 
-    vector<Move> moves;
     for (const auto& move : kingMoves) {
         int r = row + move.first;
         int c = column + move.second;
@@ -90,16 +85,14 @@ vector<Move> Position::getKingMoves(int row, int column) {
             }
         }
     }
-    return moves;
 }
 
-vector<Move> Position::getKnightMoves(int row, int column) {
+void Position::getKnightMoves(int row, int column, vector<Move>& moves) const {
     static const vector<pair<int, int>> knightMoves = {
         {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
         {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
     };
 
-    vector<Move> moves;
     for (const auto& move : knightMoves) {
         int r = row + move.first;
         int c = column + move.second;
@@ -111,7 +104,70 @@ vector<Move> Position::getKnightMoves(int row, int column) {
             }
         }
     }
-    return moves;
+}
+
+void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves) const {
+    int direction = (piece == wP) ? -1 : 1; // White pawns move up (-1), black pawns move down (+1)
+    int startRow = (piece == wP) ? 6 : 1;
+
+    // Single forward move
+    int forwardRow = row + direction;
+    if (forwardRow >= 0 && forwardRow < 8 && _board[forwardRow][column] == NA) {
+        moves.push_back(Move(row, column, forwardRow, column));
+
+        // Double forward move from the starting position
+        int doubleForwardRow = row + 2 * direction;
+        if (row == startRow && _board[doubleForwardRow][column] == NA) {
+            moves.push_back(Move(row, column, doubleForwardRow, column));
+        }
+    }
+
+    // Capturing diagonally
+    for (int dc : {-1, 1}) {  // Diagonal directions
+        int captureRow = row + direction;
+        int captureCol = column + dc;
+        if (captureRow >= 0 && captureRow < 8 && captureCol >= 0 && captureCol < 8) {
+            int targetPieceColor = pieceColor(captureRow, captureCol);
+            if (targetPieceColor != -1 && targetPieceColor != _moveturn) {
+                moves.push_back(Move(row, column, captureRow, captureCol));
+            }
+        }
+    }
+
+    // En passant
+    
+}
+
+void Position::getAllMoves(int player, vector<Move>& moves) const {
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+            int piece = _board[r][c];
+            if (pieceColor(r, c) == player) {
+                switch (piece) {
+                case wR: case bR:
+                    getRookMoves(r, c, moves);
+                    break;
+                case wB: case bB:
+                    getBishopMoves(r, c, moves);
+                    break;
+                case wQ: case bQ:
+                    getQueenMoves(r, c, moves);
+                    break;
+                case wK: case bK:
+                    getKingMoves(r, c, moves);
+                    break;
+                case wN: case bN:
+                    getKnightMoves(r, c, moves);
+                    break;
+                case wP: case bP:
+                    getPawnMoves(r, c, piece, moves);
+                    break;
+                default:
+                    break;  // Empty square
+                }
+            }
+        }
+    }
 }
 
 void Position::emptyBoard() {

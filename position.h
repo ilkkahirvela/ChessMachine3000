@@ -29,12 +29,14 @@ public:
     int pieceColor(int row, int column) const;
     void movePiece(int startR, int startC, int endR, int endC);
 
-    vector<Move> getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions);
-    vector<Move> getRookMoves(int row, int column);
-    vector<Move> getBishopMoves(int row, int column);
-    vector<Move> getQueenMoves(int row, int column);
-    vector<Move> getKingMoves(int row, int column);
-    vector<Move> getKnightMoves(int row, int column);
+    void getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const;
+    void getRookMoves(int row, int column, vector<Move>& moves) const;
+    void getBishopMoves(int row, int column, vector<Move>& moves) const;
+    void getQueenMoves(int row, int column, vector<Move>& moves) const;
+    void getKingMoves(int row, int column, vector<Move>& moves) const;
+    void getKnightMoves(int row, int column, vector<Move>& moves) const;
+    void getPawnMoves(int row, int column, int piece, vector<Move>& moves) const;
+    void getAllMoves(int player, vector<Move>& moves) const;
 
     void emptyBoard();
     void printBoard() const;

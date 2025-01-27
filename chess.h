@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// Pelaajat.
+// Players
 enum { WHITE, BLACK };
 
 // Vakioarvot eri nappululoille (NA = tyhjä ruutu).
