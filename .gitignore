@@ -32,9 +32,9 @@
 *.app
 
 # Visual Studio
-.vs/                 # User-specific Visual Studio files
-.vscode/             # VS Code settings folder (if used)
-.idea/               # JetBrains Rider/IntelliJ IDEA project settings (if used)
+.vs/
+.vscode/
+.idea/
 .vsidx
 # Visual C++ cache files
 ipch/
