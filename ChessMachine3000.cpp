@@ -13,9 +13,8 @@ int main() {
 
 	pos._moveturn = WHITE;
 
-	//pos.emptyBoard();
-	//pos.insertTestPiece(6, 4, bP);
-	//pos.insertTestPiece(0, 3, bP);
+	pos.emptyBoard();
+	pos.insertTestPiece(1, 4, wP);
 	pos.printBoard();
 
 	pos.getAllMoves(pos._moveturn, allMoves);

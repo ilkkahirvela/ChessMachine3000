@@ -116,8 +116,6 @@ void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves,
     if (forwardRow >= 0 && forwardRow < 8 && _board[forwardRow][column] == NA) {
         // Promotion handling
         if (forwardRow == promotionRow) {
-            vector<int> whitePromotions{ wR, wN, wB, wQ}; // Maybe create vectors somewhere else
-            vector<int> blackPromotions{ bR, bN, bB, bQ };
             if (player == WHITE) {
                 for (const auto& promotion : whitePromotions) {
                     moves.push_back(Move(row, column, forwardRow, column, promotion));
