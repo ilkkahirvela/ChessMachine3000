@@ -32,7 +32,7 @@ void Position::getDirectionalMoves(int row, int column, const vector<pair<int, i
         while (r >= 0 && r < 8 && c >= 0 && c < 8) {
             int piece = pieceColor(r, c);
 
-            if (piece != -1) {  // There's a piece at this position
+            if (piece != -1) {  // There's a piece at this position, not empty square
                 if (piece != _moveturn) {
                     moves.push_back(Move(row, column, r, c));  // Capture enemy piece
                 }
@@ -106,19 +106,38 @@ void Position::getKnightMoves(int row, int column, vector<Move>& moves) const {
     }
 }
 
-void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves) const {
+void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves, int player) const {
     int direction = (piece == wP) ? -1 : 1; // White pawns move up (-1), black pawns move down (+1)
     int startRow = (piece == wP) ? 6 : 1;
+    int promotionRow = (piece == wP) ? 0 : 7; 
 
     // Single forward move
     int forwardRow = row + direction;
     if (forwardRow >= 0 && forwardRow < 8 && _board[forwardRow][column] == NA) {
-        moves.push_back(Move(row, column, forwardRow, column));
+        // Promotion handling
+        if (forwardRow == promotionRow) {
+            vector<int> whitePromotions{ wR, wN, wB, wQ}; // Maybe create vectors somewhere else
+            vector<int> blackPromotions{ bR, bN, bB, bQ };
+            if (player == WHITE) {
+                for (const auto& promotion : whitePromotions) {
+                    moves.push_back(Move(row, column, forwardRow, column, promotion));
+                }
+            }
+            else if (player == BLACK) {
+                for (const auto& promotion : blackPromotions) {
+                    moves.push_back(Move(row, column, forwardRow, column, promotion));
+                }
+            }
+        }
+        // No promotion available
+        else {
+            moves.push_back(Move(row, column, forwardRow, column));
 
-        // Double forward move from the starting position
-        int doubleForwardRow = row + 2 * direction;
-        if (row == startRow && _board[doubleForwardRow][column] == NA) {
-            moves.push_back(Move(row, column, doubleForwardRow, column));
+            // Double forward move from the starting position
+            int doubleForwardRow = row + 2 * direction;
+            if (row == startRow && _board[doubleForwardRow][column] == NA) {
+                moves.push_back(Move(row, column, doubleForwardRow, column));
+            }
         }
     }
 
@@ -160,7 +179,7 @@ void Position::getAllMoves(int player, vector<Move>& moves) const {
                     getKnightMoves(r, c, moves);
                     break;
                 case wP: case bP:
-                    getPawnMoves(r, c, piece, moves);
+                    getPawnMoves(r, c, piece, moves, player);
                     break;
                 default:
                     break;  // Empty square
@@ -176,6 +195,10 @@ void Position::emptyBoard() {
             _board[r][c] = NA;
         }
     }
+}
+
+void Position::insertTestPiece(int r, int c, int piece) {
+    _board[r][c] = piece;
 }
 
 void Position::printBoard() const {

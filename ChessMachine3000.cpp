@@ -11,12 +11,22 @@ int main() {
 	Position pos;
 	vector<Move> allMoves;
 
-	pos.printBoard();
-	pos.getAllMoves(WHITE, allMoves);
+	pos._moveturn = WHITE;
 
+	//pos.emptyBoard();
+	//pos.insertTestPiece(6, 4, bP);
+	//pos.insertTestPiece(0, 3, bP);
+	pos.printBoard();
+
+	pos.getAllMoves(pos._moveturn, allMoves);
+
+	int moveCount = 0;
 	for (const auto& move : allMoves) {
-		cout << move.toString() << endl;
+		cout << move.toString() << " ";
+		moveCount += 1;
 	}
+
+	cout << endl << "Total possible moves in the current position: " << moveCount << endl;
 
 	return 0;
 }

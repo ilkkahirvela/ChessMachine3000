@@ -14,11 +14,10 @@ private:
         { NA, NA, NA, NA, NA, NA, NA, NA },
         { NA, NA, NA, NA, NA, NA, NA, NA },
         { NA, NA, NA, NA, NA, NA, NA, NA },
-        { wP, wP, wP, NA, wP, wP, wP, wP },
+        { wP, wP, wP, wP, wP, wP, wP, wP },
         { wR, wN, wB, wQ, wK, wB, wN, wR }
     };
 
-    int _moveturn = WHITE;
     bool _valkea_lyhyt_linna_sallittu = true;
     bool _valkea_pitka_linna_sallittu = true;
     bool _musta_lyhyt_linna_sallittu = true;
@@ -26,6 +25,8 @@ private:
     int _kaksoisaskel_linjalla = -1;
 
 public:
+    int _moveturn = WHITE;
+
     int pieceColor(int row, int column) const;
     void movePiece(int startR, int startC, int endR, int endC);
 
@@ -35,10 +36,11 @@ public:
     void getQueenMoves(int row, int column, vector<Move>& moves) const;
     void getKingMoves(int row, int column, vector<Move>& moves) const;
     void getKnightMoves(int row, int column, vector<Move>& moves) const;
-    void getPawnMoves(int row, int column, int piece, vector<Move>& moves) const;
+    void getPawnMoves(int row, int column, int piece, vector<Move>& moves, int player) const;
     void getAllMoves(int player, vector<Move>& moves) const;
 
     void emptyBoard();
+    void insertTestPiece(int r, int c, int piece);
     void printBoard() const;
     void findKing(int piece, int& row, int& column) const;
 };
