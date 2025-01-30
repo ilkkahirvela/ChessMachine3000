@@ -64,13 +64,13 @@ string coordsToUci(const vector<Move>& moves) {
     return uciMoves;
 }
 
-bool validMove(vector<Move> allMoves, int endRow, int endCol) {
+bool validMove(const vector<Move>& allMoves, int startRow, int startCol, int endRow, int endCol) {
     for (const auto& move : allMoves) {
-        if (move.endRow == endRow && move.endCol == endCol) {
+        if (move.startRow == startRow && move.startCol == startCol && move.endRow == endRow && move.endCol == endCol) {
             return true; // Return true if a matching move is found
         }
     }
-    return false;
+    return false; // Return false if no matching move is found
 }
 
 // Kertoo pelaajan vastustajan värin

@@ -46,7 +46,7 @@ int main() {
 		int endRow = coords.second.first;
 		int endCol = coords.second.second;
 
-		if (validMove(allMoves, endRow, endCol)) {
+		if (validMove(allMoves, startRow, startCol, endRow, endCol)) {
 			pos.movePiece(startRow, startCol, endRow, endCol, promotedPiece);
 			pos.changeTurn();
 		}
