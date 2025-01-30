@@ -17,9 +17,10 @@ static const vector<int> blackPromotions{ bR, bN, bB, bQ };
 // Palauttaa annetun nappulan tulostettavan muodon (valkoiset isolla, mustat pienellä, 12 = " ")
 string pieceIndicator(int piece);
 
-pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move);
-
+pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move, int& promotedPiece);
 string coordsToUci(const vector<Move>& moves);
+
+bool validMove(vector<Move> allMoves, int endRow, int endCol);
 
 // Palauttaa pelaajan vastustajan.
 int opponent(int player);

@@ -6,6 +6,15 @@
 
 using namespace std;
 
+void Position::changeTurn() {
+    if (_moveturn == WHITE) {
+        _moveturn = BLACK;
+    }
+    else {
+        _moveturn = WHITE;
+    }
+}
+
 int Position::pieceColor(int row, int column) const {
     int piece = _board[row][column];
 
@@ -18,10 +27,21 @@ int Position::pieceColor(int row, int column) const {
     return -1;  // Empty square or invalid piece
 }
 
-void Position::movePiece(int startR, int startC, int endR, int endC) {
+void Position::movePiece(int startR, int startC, int endR, int endC, int promotedPiece) {
     int piece = _board[startR][startC];
     _board[startR][startC] = NA;
-    _board[endR][endC] = piece;
+
+    // Check if the move is a pawn promotion
+    if ((piece == wP && endR == 0) || (piece == bP && endR == 7)) {
+        // If promotedPiece is not specified, default to queen
+        if (promotedPiece == NA) {
+            promotedPiece = (piece == wP) ? wQ : bQ;
+        }
+        _board[endR][endC] = promotedPiece;
+    }
+    else {
+        _board[endR][endC] = piece;
+    }
 }
 
 void Position::getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const {

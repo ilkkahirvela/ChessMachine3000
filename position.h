@@ -27,9 +27,9 @@ private:
 public:
     int _moveturn = WHITE;
 
+    void changeTurn();
     int pieceColor(int row, int column) const;
-    void movePiece(int startR, int startC, int endR, int endC);
-
+    void movePiece(int startR, int startC, int endR, int endC, int promotedPiece = NA);
     void getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const;
     void getRookMoves(int row, int column, vector<Move>& moves) const;
     void getBishopMoves(int row, int column, vector<Move>& moves) const;
