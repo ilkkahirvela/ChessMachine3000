@@ -13,9 +13,10 @@ int main() {
 	pos._moveturn = WHITE;
 	int promotedPiece;
 
-	//pos.emptyBoard();
-	//pos.insertTestPiece(1, 4, wP);
-	//pos.insertTestPiece(0, 0, bP);
+	// Pawn promotion testing
+	pos.emptyBoard();
+	pos.insertTestPiece(1, 4, wP);
+	pos.insertTestPiece(0, 0, bP);
 
 	while (true) {
 		allMoves.clear();
