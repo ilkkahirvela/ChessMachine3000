@@ -6,6 +6,24 @@
 
 using namespace std;
 
+const vector<pair<int, int>> Position::knightOffsets = {
+    {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
+    {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
+};
+
+const vector<pair<int, int>> Position::rookDirections ={
+    {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+};
+
+const vector<pair<int, int>> Position::bishopDirections = {
+    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+};
+
+const vector<pair<int, int>> Position::queenDirections = {
+    {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+};
+
 void Position::changeTurn() {
     if (_moveturn == WHITE) {
         _moveturn = BLACK;
@@ -67,24 +85,14 @@ void Position::getDirectionalMoves(int row, int column, const vector<pair<int, i
 }
 
 void Position::getRookMoves(int row, int column, vector<Move>& moves) const {
-    static const vector<pair<int, int>> rookDirections = {
-        {-1, 0}, {1, 0}, {0, -1}, {0, 1}
-    };
     getDirectionalMoves(row, column, rookDirections, moves);
 }
 
 void Position::getBishopMoves(int row, int column, vector<Move>& moves) const {
-    static const vector<pair<int, int>> bishopDirections = {
-        {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
-    };
     getDirectionalMoves(row, column, bishopDirections, moves);
 }
 
 void Position::getQueenMoves(int row, int column, vector<Move>& moves) const {
-    static const vector<pair<int, int>> queenDirections = {
-        {-1, 0}, {1, 0}, {0, -1}, {0, 1},
-        {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
-    };
     getDirectionalMoves(row, column, queenDirections, moves);
 }
 
@@ -108,12 +116,7 @@ void Position::getKingMoves(int row, int column, vector<Move>& moves) const {
 }
 
 void Position::getKnightMoves(int row, int column, vector<Move>& moves) const {
-    static const vector<pair<int, int>> knightMoves = {
-        {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
-        {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
-    };
-
-    for (const auto& move : knightMoves) {
+    for (const auto& move : knightOffsets) {
         int r = row + move.first;
         int c = column + move.second;
 
@@ -243,10 +246,6 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
                    // --- Knight ---
             case wN:
             case bN: {
-                static const vector<pair<int, int>> knightOffsets = {
-                    {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
-                    {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
-                };
                 for (const auto& offset : knightOffsets) {
                     if (r + offset.first == row && c + offset.second == col) {
                         return true;
@@ -272,10 +271,7 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
                    // --- Rook ---
             case wR:
             case bR: {
-                static const vector<pair<int, int>> rookDirs = {
-                    {-1, 0}, {1, 0}, {0, -1}, {0, 1}
-                };
-                for (const auto& dir : rookDirs) {
+                for (const auto& dir : rookDirections) {
                     int rr = r + dir.first;
                     int cc = c + dir.second;
                     while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
@@ -294,10 +290,7 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
                    // --- Bishop ---
             case wB:
             case bB: {
-                static const vector<pair<int, int>> bishopDirs = {
-                    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
-                };
-                for (const auto& dir : bishopDirs) {
+                for (const auto& dir : bishopDirections) {
                     int rr = r + dir.first;
                     int cc = c + dir.second;
                     while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
@@ -316,11 +309,7 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
                    // --- Queen ---
             case wQ:
             case bQ: {
-                static const vector<pair<int, int>> queenDirs = {
-                    {-1, 0}, {1, 0}, {0, -1}, {0, 1},
-                    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
-                };
-                for (const auto& dir : queenDirs) {
+                for (const auto& dir : queenDirections) {
                     int rr = r + dir.first;
                     int cc = c + dir.second;
                     while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {

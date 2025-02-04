@@ -18,6 +18,11 @@ private:
         { wR, wN, wB, wQ, wK, wB, wN, wR }
     };
 
+    static const vector<pair<int, int>> knightOffsets;
+    static const vector<pair<int, int>> rookDirections;
+    static const vector<pair<int, int>> bishopDirections;
+    static const vector<pair<int, int>> queenDirections;
+
     bool _valkea_lyhyt_linna_sallittu = true;
     bool _valkea_pitka_linna_sallittu = true;
     bool _musta_lyhyt_linna_sallittu = true;
