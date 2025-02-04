@@ -22,5 +22,5 @@ string coordsToUci(const vector<Move>& moves);
 
 bool validMove(const vector<Move>& allMoves, int startRow, int startCol, int endRow, int endCol);
 
-// Palauttaa pelaajan vastustajan.
+// Returns the color of the opponent
 int opponent(int player);

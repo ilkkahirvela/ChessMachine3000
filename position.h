@@ -30,6 +30,7 @@ public:
     void changeTurn();
     int pieceColor(int row, int column) const;
     void movePiece(int startR, int startC, int endR, int endC, int promotedPiece = NA);
+    
     void getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const;
     void getRookMoves(int row, int column, vector<Move>& moves) const;
     void getBishopMoves(int row, int column, vector<Move>& moves) const;
@@ -37,10 +38,14 @@ public:
     void getKingMoves(int row, int column, vector<Move>& moves) const;
     void getKnightMoves(int row, int column, vector<Move>& moves) const;
     void getPawnMoves(int row, int column, int piece, vector<Move>& moves, int player) const;
+    
     void getAllMoves(int player, vector<Move>& moves) const;
+    void getLegalMoves(vector<Move>& moves) const;
+
+    bool isSquareUnderAttack(int row, int col, int opponent) const;
+    void findKing(int piece, int& row, int& column) const;
 
     void emptyBoard();
     void insertTestPiece(int r, int c, int piece);
     void printBoard() const;
-    void findKing(int piece, int& row, int& column) const;
 };

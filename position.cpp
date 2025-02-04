@@ -207,6 +207,156 @@ void Position::getAllMoves(int player, vector<Move>& moves) const {
     }
 }
 
+void Position::getLegalMoves(vector<Move>& legalMoves) const {
+
+}
+
+bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
+    // Loop through every square on the board
+    for (int r = 0; r < 8; ++r) {
+        for (int c = 0; c < 8; ++c) {
+            int piece = _board[r][c];
+            if (piece == NA) { // Skip empty squares
+                continue;  
+            }
+            if (pieceColor(r, c) != opponent) { // Only consider opponent's pieces
+                continue;
+            }
+            switch (piece) {
+                // --- Pawn ---
+            case wP:
+            case bP: {
+                if (opponent == WHITE) {
+                    if ((r - 1 == row && c - 1 == col) ||
+                        (r - 1 == row && c + 1 == col)) {
+                        return true;
+                    }
+                }
+                else {  // opponent == BLACK
+                    if ((r + 1 == row && c - 1 == col) ||
+                        (r + 1 == row && c + 1 == col)) {
+                        return true;
+                    }
+                }
+                break;
+            }
+                   // --- Knight ---
+            case wN:
+            case bN: {
+                static const vector<pair<int, int>> knightOffsets = {
+                    {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
+                    {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
+                };
+                for (const auto& offset : knightOffsets) {
+                    if (r + offset.first == row && c + offset.second == col) {
+                        return true;
+                    }
+                }
+                break;
+            }
+                   // --- King ---
+            case wK:
+            case bK: {
+                for (int dr = -1; dr <= 1; ++dr) {
+                    for (int dc = -1; dc <= 1; ++dc) {
+                        if (dr == 0 && dc == 0) {
+                            continue;
+                        }
+                        if (r + dr == row && c + dc == col) {
+                            return true;
+                        }
+                    }
+                }
+                break;
+            }
+                   // --- Rook ---
+            case wR:
+            case bR: {
+                static const vector<pair<int, int>> rookDirs = {
+                    {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+                };
+                for (const auto& dir : rookDirs) {
+                    int rr = r + dir.first;
+                    int cc = c + dir.second;
+                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                        if (rr == row && cc == col) {
+                            return true;
+                        }
+                        if (_board[rr][cc] != NA) {
+                            break;
+                        }
+                        rr += dir.first;
+                        cc += dir.second;
+                    }
+                }
+                break;
+            }
+                   // --- Bishop ---
+            case wB:
+            case bB: {
+                static const vector<pair<int, int>> bishopDirs = {
+                    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+                };
+                for (const auto& dir : bishopDirs) {
+                    int rr = r + dir.first;
+                    int cc = c + dir.second;
+                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                        if (rr == row && cc == col) {
+                            return true;
+                        }
+                        if (_board[rr][cc] != NA) {
+                            break;
+                        }
+                        rr += dir.first;
+                        cc += dir.second;
+                    }
+                }
+                break;
+            }
+                   // --- Queen ---
+            case wQ:
+            case bQ: {
+                static const vector<pair<int, int>> queenDirs = {
+                    {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+                    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+                };
+                for (const auto& dir : queenDirs) {
+                    int rr = r + dir.first;
+                    int cc = c + dir.second;
+                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
+                        if (rr == row && cc == col) {
+                            return true;
+                        }
+                        if (_board[rr][cc] != NA) {
+                            break;
+                        }
+                        rr += dir.first;
+                        cc += dir.second;
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
+    // If no opponent piece attacks the square, return false.
+    return false;
+}
+
+void Position::findKing(int piece, int& row, int& column) const {
+    for (int r = 0; r < 8; ++r) {
+        for (int c = 0; c < 8; ++c) {
+            if (_board[r][c] == piece) {
+                row = r;
+                column = c;
+                return;
+            }
+        }
+    }
+}
+
 void Position::emptyBoard() {
     for (int r = 0; r < 8; r++) {
         for (int c = 0; c < 8; c++) {
@@ -256,16 +406,4 @@ void Position::printBoard() const {
         cout << "----";
     }
     cout << "+" << endl;
-}
-
-void Position::findKing(int piece, int& row, int& column) const {
-    for (int r = 0; r < 8; ++r) {
-        for (int c = 0; c < 8; ++c) {
-            if (_board[r][c] == piece) {
-                row = r;
-                column = c;
-                return;
-            }
-        }
-    }
 }

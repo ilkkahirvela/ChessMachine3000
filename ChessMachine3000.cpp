@@ -9,23 +9,34 @@ using namespace std;
 
 int main() {
 	Position pos;
-	vector<Move> allMoves;
 	pos._moveturn = WHITE;
-	int promotedPiece;
+	int kingRow, kingCol;
 
-	// Pawn promotion testing
-	pos.emptyBoard();
-	pos.insertTestPiece(1, 4, wP);
-	pos.insertTestPiece(0, 0, bP);
+	vector<Move> allMoves;
+	vector<Move> legalMoves;
+	
+	// Helper variable for pawn promotion
+	int promotedPiece;
+	
+	//// Pawn promotion testing
+	//pos.emptyBoard();
+	//pos.insertTestPiece(1, 4, wP);
+	//pos.insertTestPiece(0, 0, bP);
 
 	while (true) {
 		allMoves.clear();
+		legalMoves.clear();
 		cout << "Current board:" << endl;
 
 		pos.printBoard();
 
 		pos.getAllMoves(pos._moveturn, allMoves);
+		pos.findKing(pos._moveturn == WHITE ? wK : bK, kingRow, kingCol); // Find the current player's king
 
+		if (pos.isSquareUnderAttack(kingRow, kingCol, pos._moveturn == WHITE ? BLACK : WHITE)) {
+			cout << "Your king is under attack!" << endl;
+		}
+		
 		int moveCount = 0;
 		for (const auto& move : allMoves) {
 			cout << move.toString() << " ";

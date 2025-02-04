@@ -73,7 +73,6 @@ bool validMove(const vector<Move>& allMoves, int startRow, int startCol, int end
     return false; // Return false if no matching move is found
 }
 
-// Kertoo pelaajan vastustajan värin
 int opponent(int player) {
     if (player == WHITE) {
         return BLACK;
