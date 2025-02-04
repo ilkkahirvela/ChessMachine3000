@@ -45,7 +45,7 @@ public:
     void getPawnMoves(int row, int column, int piece, vector<Move>& moves, int player) const;
     
     void getAllMoves(int player, vector<Move>& moves) const;
-    void getLegalMoves(vector<Move>& moves) const;
+    void getLegalMoves(vector<Move> allMoves, vector<Move>& legalMoves) const;
 
     bool isSquareUnderAttack(int row, int col, int opponent) const;
     void findKing(int piece, int& row, int& column) const;

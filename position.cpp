@@ -210,8 +210,22 @@ void Position::getAllMoves(int player, vector<Move>& moves) const {
     }
 }
 
-void Position::getLegalMoves(vector<Move>& legalMoves) const {
+void Position::getLegalMoves(vector<Move> allMoves, vector<Move>& legalMoves) const {
+    int kingRow, kingCol;
+    int player = _moveturn; // Store the moving player's color
+    int opponent = (player == WHITE ? BLACK : WHITE);
 
+    for (const auto& move : allMoves) {
+        Position posCopy = *this;
+
+        posCopy.movePiece(move.startRow, move.startCol, move.endRow, move.endCol);
+
+        posCopy.findKing(player == WHITE ? wK : bK, kingRow, kingCol);
+
+        if (!posCopy.isSquareUnderAttack(kingRow, kingCol, opponent)) {
+            legalMoves.push_back(move); // The move is legal.
+        }
+    }
 }
 
 bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
