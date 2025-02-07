@@ -18,15 +18,19 @@ private:
         { wR, wN, wB, wQ, wK, wB, wN, wR }
     };
 
-    static const vector<pair<int, int>> knightOffsets;
-    static const vector<pair<int, int>> rookDirections;
-    static const vector<pair<int, int>> bishopDirections;
-    static const vector<pair<int, int>> queenDirections;
+    static const vector<pair<int, int>> _knightOffsets;
+    static const vector<pair<int, int>> _rookDirections;
+    static const vector<pair<int, int>> _bishopDirections;
+    static const vector<pair<int, int>> _queenDirections;
+    static const vector<pair<int, int>> _kingMoves;
 
-    bool _valkea_lyhyt_linna_sallittu = true;
-    bool _valkea_pitka_linna_sallittu = true;
-    bool _musta_lyhyt_linna_sallittu = true;
-    bool _musta_pitka_linna_sallittu = true;
+    bool _whiteKingMoved = false;
+    bool _whiteKingsideRookMoved = false;
+    bool _whiteQueensideRookMoved = false;
+    bool _blackKingMoved = false;
+    bool _blackKingsideRookMoved = false;
+    bool _blackQueensideRookMoved = false;
+
     int _kaksoisaskel_linjalla = -1;
 
 public:

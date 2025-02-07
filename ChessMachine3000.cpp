@@ -16,6 +16,15 @@ int main() {
 	
 	int promotedPiece; // Helper variable for pawn promotion
 
+	// Castling testing
+	pos.emptyBoard();
+	pos.insertTestPiece(7, 4, wK);
+	pos.insertTestPiece(7, 0, wR);
+	pos.insertTestPiece(7, 7, wR);
+	pos.insertTestPiece(0, 4, bK);
+	pos.insertTestPiece(0, 0, bR);
+	pos.insertTestPiece(0, 7, bR);
+
 	while (true) {
 		allMoves.clear();
 		legalMoves.clear();

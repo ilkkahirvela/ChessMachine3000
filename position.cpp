@@ -6,20 +6,25 @@
 
 using namespace std;
 
-const vector<pair<int, int>> Position::knightOffsets = {
+const vector<pair<int, int>> Position::_knightOffsets = {
     {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
     {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
 };
 
-const vector<pair<int, int>> Position::rookDirections ={
+const vector<pair<int, int>> Position::_rookDirections ={
     {-1, 0}, {1, 0}, {0, -1}, {0, 1}
 };
 
-const vector<pair<int, int>> Position::bishopDirections = {
+const vector<pair<int, int>> Position::_bishopDirections = {
     {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
 };
 
-const vector<pair<int, int>> Position::queenDirections = {
+const vector<pair<int, int>> Position::_queenDirections = {
+    {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+    {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+};
+
+const vector<pair<int, int>> Position::_kingMoves = {
     {-1, 0}, {1, 0}, {0, -1}, {0, 1},
     {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
 };
@@ -49,7 +54,31 @@ void Position::movePiece(int startR, int startC, int endR, int endC, int promote
     int piece = _board[startR][startC];
     _board[startR][startC] = NA;
 
-    // Check if the move is a pawn promotion
+    // Update castilng booleans *****NEED TO ALSO UPDATE WHEN ROOK IS CAPTURED BY ENEMY!*****
+    if (piece == wK) {
+        _whiteKingMoved = true;
+    }
+    else if (piece == bK) {
+        _blackKingMoved = true;
+    }
+    else if (piece == wR) {
+        if (startR == 7 && startC == 0) {
+            _whiteQueensideRookMoved = true;
+        }
+        else if (startR == 7 && startC == 7) {
+            _whiteKingsideRookMoved = true;
+        }
+    }
+    else if (piece == bR) {
+        if (startR == 0 && startC == 0) {
+            _blackQueensideRookMoved = true;
+        }
+        else if (startR == 0 && startC == 7) {
+            _blackKingsideRookMoved = true;
+        }
+    }
+
+    // Pawn promotion
     if ((piece == wP && endR == 0) || (piece == bP && endR == 7)) {
         // If promotedPiece is not specified, default to queen
         if (promotedPiece == NA) {
@@ -59,6 +88,19 @@ void Position::movePiece(int startR, int startC, int endR, int endC, int promote
     }
     else {
         _board[endR][endC] = piece;
+    }
+
+    // Castling
+    // If the king moves two squares, the move is a castling move
+    if ((piece == wK || piece == bK) && abs(startC - endC) == 2) {
+        if (endC == 6) {
+            _board[startR][7] = NA;
+            _board[startR][5] = (piece == wK) ? wR : bR;
+        }
+        else if (endC == 2) {
+            _board[startR][0] = NA;
+            _board[startR][3] = (piece == wK) ? wR : bR;
+        }
     }
 }
 
@@ -85,24 +127,19 @@ void Position::getDirectionalMoves(int row, int column, const vector<pair<int, i
 }
 
 void Position::getRookMoves(int row, int column, vector<Move>& moves) const {
-    getDirectionalMoves(row, column, rookDirections, moves);
+    getDirectionalMoves(row, column, _rookDirections, moves);
 }
 
 void Position::getBishopMoves(int row, int column, vector<Move>& moves) const {
-    getDirectionalMoves(row, column, bishopDirections, moves);
+    getDirectionalMoves(row, column, _bishopDirections, moves);
 }
 
 void Position::getQueenMoves(int row, int column, vector<Move>& moves) const {
-    getDirectionalMoves(row, column, queenDirections, moves);
+    getDirectionalMoves(row, column, _queenDirections, moves);
 }
 
 void Position::getKingMoves(int row, int column, vector<Move>& moves) const {
-    static const vector<pair<int, int>> kingMoves = {
-        {-1, 0}, {1, 0}, {0, -1}, {0, 1},
-        {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
-    };
-
-    for (const auto& move : kingMoves) {
+    for (const auto& move : _kingMoves) {
         int r = row + move.first;
         int c = column + move.second;
 
@@ -113,10 +150,48 @@ void Position::getKingMoves(int row, int column, vector<Move>& moves) const {
             }
         }
     }
+
+    // Castling Moves
+    if (_moveturn == WHITE && !_whiteKingMoved) {
+        // White kingside castling: King from e1 (7,4) to g1 (7,6)
+        if (_board[7][5] == NA && _board[7][6] == NA && !_whiteKingsideRookMoved) {
+            if (!isSquareUnderAttack(7, 4, BLACK) &&
+                !isSquareUnderAttack(7, 5, BLACK) &&
+                !isSquareUnderAttack(7, 6, BLACK)) {
+                moves.push_back(Move(7, 4, 7, 6));
+            }
+        }
+        // White queenside castling: King from e1 (7,4) to c1 (7,2)
+        if (_board[7][3] == NA && _board[7][2] == NA && _board[7][1] == NA && !_whiteQueensideRookMoved) {
+            if (!isSquareUnderAttack(7, 4, BLACK) &&
+                !isSquareUnderAttack(7, 3, BLACK) &&
+                !isSquareUnderAttack(7, 2, BLACK)) {
+                moves.push_back(Move(7, 4, 7, 2));
+            }
+        }
+    }
+    else if (_moveturn == BLACK && !_blackKingMoved) {
+        // Black kingside castling: King from e8 (0,4) to g8 (0,6)
+        if (_board[0][5] == NA && _board[0][6] == NA && !_blackKingsideRookMoved) {
+            if (!isSquareUnderAttack(0, 4, WHITE) &&
+                !isSquareUnderAttack(0, 5, WHITE) &&
+                !isSquareUnderAttack(0, 6, WHITE)) {
+                moves.push_back(Move(0, 4, 0, 6));
+            }
+        }
+        // Black queenside castling: King from e8 (0,4) to c8 (0,2)
+        if (_board[0][3] == NA && _board[0][2] == NA && _board[0][1] == NA && !_blackQueensideRookMoved) {
+            if (!isSquareUnderAttack(0, 4, WHITE) &&
+                !isSquareUnderAttack(0, 3, WHITE) &&
+                !isSquareUnderAttack(0, 2, WHITE)) {
+                moves.push_back(Move(0, 4, 0, 2));
+            }
+        }
+    }
 }
 
 void Position::getKnightMoves(int row, int column, vector<Move>& moves) const {
-    for (const auto& move : knightOffsets) {
+    for (const auto& move : _knightOffsets) {
         int r = row + move.first;
         int c = column + move.second;
 
@@ -223,24 +298,24 @@ void Position::getLegalMoves(vector<Move> allMoves, vector<Move>& legalMoves) co
         posCopy.findKing(player == WHITE ? wK : bK, kingRow, kingCol);
 
         if (!posCopy.isSquareUnderAttack(kingRow, kingCol, opponent)) {
-            legalMoves.push_back(move); // The move is legal.
+            legalMoves.push_back(move); // The move is legal
         }
     }
 }
 
 bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
-    // Loop through every square on the board
+    // Loop through every square
     for (int r = 0; r < 8; ++r) {
         for (int c = 0; c < 8; ++c) {
             int piece = _board[r][c];
             if (piece == NA) { // Skip empty squares
                 continue;  
             }
-            if (pieceColor(r, c) != opponent) { // Only consider opponent's pieces
+            if (pieceColor(r, c) != opponent) {
                 continue;
             }
             switch (piece) {
-                // --- Pawn ---
+                // Pawn
             case wP:
             case bP: {
                 if (opponent == WHITE) {
@@ -257,35 +332,30 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
                 }
                 break;
             }
-                   // --- Knight ---
+                   // Knight
             case wN:
             case bN: {
-                for (const auto& offset : knightOffsets) {
+                for (const auto& offset : _knightOffsets) {
                     if (r + offset.first == row && c + offset.second == col) {
                         return true;
                     }
                 }
                 break;
             }
-                   // --- King ---
+                   // King
             case wK:
             case bK: {
-                for (int dr = -1; dr <= 1; ++dr) {
-                    for (int dc = -1; dc <= 1; ++dc) {
-                        if (dr == 0 && dc == 0) {
-                            continue;
-                        }
-                        if (r + dr == row && c + dc == col) {
-                            return true;
-                        }
+                for (const auto& move : _kingMoves) {
+                    if (r + move.first == row && c + move.second == col) {
+                        return true;
                     }
                 }
                 break;
             }
-                   // --- Rook ---
+                   // Rook
             case wR:
             case bR: {
-                for (const auto& dir : rookDirections) {
+                for (const auto& dir : _rookDirections) {
                     int rr = r + dir.first;
                     int cc = c + dir.second;
                     while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
@@ -301,10 +371,10 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
                 }
                 break;
             }
-                   // --- Bishop ---
+                   // Bishop
             case wB:
             case bB: {
-                for (const auto& dir : bishopDirections) {
+                for (const auto& dir : _bishopDirections) {
                     int rr = r + dir.first;
                     int cc = c + dir.second;
                     while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
@@ -320,10 +390,10 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
                 }
                 break;
             }
-                   // --- Queen ---
+                   // Queen
             case wQ:
             case bQ: {
-                for (const auto& dir : queenDirections) {
+                for (const auto& dir : _queenDirections) {
                     int rr = r + dir.first;
                     int cc = c + dir.second;
                     while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
