@@ -429,7 +429,49 @@ void Position::findKing(int piece, int& row, int& column) const {
 }
 
 float Position::material() {
-    return 0;
+    float balance = 0.0f;
+    for (int r = 0; r < 8; ++r) {
+        for (int c = 0; c < 8; ++c) {
+            switch (_board[r][c]) {
+            case wP:
+                balance += 1;
+                break;
+            case wN:
+                balance += 3;
+                break;
+            case wB:
+                balance += 3;
+                break;
+            case wR:
+                balance += 5;
+                break;
+            case wQ:
+                balance += 9;
+                break;
+
+            case bP:
+                balance -= 1;
+                break;
+            case bN:
+                balance -= 3;
+                break;
+            case bB:
+                balance -= 3;
+                break;
+            case bR:
+                balance -= 5;
+                break;
+            case bQ:
+                balance -= 9;
+                break;
+
+            default: // empty
+                break;
+            }
+        }
+    }
+
+    return balance;
 }
 
 float Position::endResultScore() const {

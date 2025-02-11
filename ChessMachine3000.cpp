@@ -35,6 +35,8 @@ int main() {
 		for (const auto& move : legalMoves)
 			cout << move.toString() << " ";
 		cout << "\nTotal possible moves: " << legalMoves.size() << "\n";
+		
+		cout << "Material balance: " << pos.material() << "\n";
 
 		cout << "Enter your move in UCI format: ";
 		string stringMove;
