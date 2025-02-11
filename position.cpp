@@ -428,47 +428,82 @@ void Position::findKing(int piece, int& row, int& column) const {
     }
 }
 
-// esim.
-//MinimaxValue Position::minimax(int depth) {
-//    // Generoi aseman lailliset siirrot
-//    vector<Move> moves;
-//    // getLegalMoves(moves);
+float Position::material() {
+    return 0;
+}
+
+float Position::endResultScore() const {
+    return 0;
+}
+
+float Position::evaluate() const {
+    // return 1.0f * material() + 0.1f * mobiliteetti();
+
+    // TODO
+    // t‰ydent‰k‰‰ halutessanne uusilla pisteytett‰vill‰ aseman piirteill‰.
+    // Mobiliteetin sijasta kannattanee pisteytt‰‰ materiaali nappuloiden
+    // keskeisen sijainin perusteella, ks. esim. 
+    // https://github.com/bytefire/Shutranj/blob/master/Shutranj.Engine/Evaluation2.cs
+    return 0;
+}
+
+// Palauttaa aseman minimax-arvon. Syvyys m‰‰ritt‰‰,
+// kuinka monta asekelta syvemm‰lle pelipuuta k‰yd‰‰n l‰pi.
 //
-//    if (moves.size() == 0) {
-//        // return MinimaxValue(pisteyta_lopputulos(), Move())
-//    }
+// Testaaminen esim. p‰‰ohjelmasta:
 //
-//    // Kantatapaus 2
-//    if (depth == 0) {
-//        // return MinimaxValue(evaluate(), Move())
-//    }
-//
-//    // K‰yd‰‰n siirrot l‰pi yksitellen
-//    float bestValue = _moveturn == WHITE ?
-//        numeric_limits<float>::min() : numeric_limits<float>::max();
-//    Move bestMove;
-//    for (Move& move : moves) {
-//        Position posCopy = *this;
-//        // posCopy.movePiece(move);
-//
-//        // Rekursioaskel. Tutkitaan uusi asema
-//        MinimaxValue value = posCopy.minimax(depth - 1);
-//
-//        // Tutkitaan paluuarvo
-//        if (_moveturn == WHITE && value._value > bestValue) {
-//            // Lˆydettiin uusi paras minimax arvo
-//            bestValue = value._value;
-//            bestMove = value._move;
-//        }
-//        else if (_moveturn == BLACK && value._value < bestValue) {
-//            // Lˆydettiin uusi paras minimax arvo
-//            bestValue = value._value;
-//            bestMove = value._move;
-//        }
-//    }
-//
-//    return MinimaxValue(bestValue, bestMove);
-//}
+// Asema asema;
+// MinimaxArvo arvo = asema.minimax(4);
+// 
+// Nyt tietokoneen siirto saadaan pelattua n‰in:
+// asema.tee_siirto(arvo._siirto);
+MinimaxValue Position::minimax(int depth, vector<Move> moves) {
+    if (moves.size() == 0)
+    {
+        // Rekursion kantatapaus 1:
+        // peli on p‰‰ttynyt (ei yht‰‰n laillista siirtoa).
+        return MinimaxValue(endResultScore(), Move());
+    }
+
+    if (depth == 0)
+    {
+        // Rekursion kantatapaus 2:
+        // ollaan katkaisusyvyydess‰.
+        return MinimaxValue(evaluate(), Move());
+    }
+
+    // Siirtoja on j‰ljell‰ ja ei olla katkaisusyvyydess‰,
+    // joten kokeillaan yksitellen mahdollisia siirtoja,
+    // ja kutsutaan minimax:a kullekin seuraaja-asemalle.
+    // Otetaan paras minimax-arvo talteen (alustetaan
+    // paras_arvo mahdollisimman huonoksi siirtovuoroisen
+    // pelaajan kannalta).
+    float bestValue = _moveturn == WHITE ? numeric_limits<float>::min() : numeric_limits<float>::max();
+    Move bestMove;
+    for (Move& move : moves)
+    {
+        Position posCopy = *this;
+        posCopy.movePiece(move);
+
+        // Rekursioasekel: kutsutaan minimax:ia seuraaja-asemalle.
+        MinimaxValue value = posCopy.minimax(depth - 1, moves);
+
+        // Jos saatiin paras arvo, otetaan se talteen.
+        if (_moveturn == WHITE && value._value > bestValue)
+        {
+            bestValue = value._value;
+            bestMove = move;
+        }
+        else if (_moveturn == BLACK && value._value < bestValue)
+        {
+            bestValue = value._value;
+            bestMove = move;
+        }
+    }
+
+    // Palautetaan paras arvo.
+    return MinimaxValue(bestValue, bestMove);
+}
 
 // --- BOARD VISUALISATION ---
 void Position::emptyBoard() {

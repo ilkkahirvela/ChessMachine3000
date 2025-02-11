@@ -62,8 +62,32 @@ public:
 
     bool isSquareUnderAttack(int row, int col, int opponent) const;
     void findKing(int piece, int& row, int& column) const;
+
+    // Laskee materiaalitasapainon (valkean nappuloiden arvo - mustan nappuloiden arvo).
+    // Nappuloiden arvot:
+    //
+    // sotilas		1
+    // ratsu		3
+    // l‰hetti		3
+    // torni		5
+    // daami		9
+    //
+    float material();
     
-    // MinimaxValue minimax(int depth);
+    // Pisteytt‰‰ pelin lopputuloksen seuraavasti:
+    //
+    // Valkea tehnyt matin			1000000
+    // Tasapeli (patti)				0
+    // Musta tehnyt matin		   -1000000
+    //
+    // Funktiota kutsutaan, kun asemassa ei ole en‰‰ yht‰‰n laillista
+    // siirtoa (anna_siirrot on palattanyt tyhj‰n siirtovektorin).
+    //
+    float endResultScore() const;
+
+    // Pisteytt‰‰ shakkiaseman heuristisesti.
+    float evaluate() const;
+    MinimaxValue minimax(int depth, vector<Move> moves);
 
     void emptyBoard();
     void insertTestPiece(int r, int c, int piece);
