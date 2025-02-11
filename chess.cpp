@@ -16,20 +16,20 @@ string pieceIndicator(int piece) {
     return pieceIndicators[piece];
 }
 
-pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move, int& promotedPiece) {
+Move uciToMove(const string& moveStr) {
     auto getCoords = [](char file, char rank) -> pair<int, int> {
-        int row = 8 - (rank - '0');
-        int col = file - 'a';
+        int row = 8 - (rank - '0');  
+        int col = file - 'a';        
         return { row, col };
         };
 
-    pair<int, int> from = getCoords(move[0], move[1]);
-    pair<int, int> to = getCoords(move[2], move[3]);
+    pair<int, int> from = getCoords(moveStr[0], moveStr[1]);
+    pair<int, int> to = getCoords(moveStr[2], moveStr[3]);
 
-    // Handle promotion
-    promotedPiece = NA; // Default to no promotion
-    if (move.length() == 5) {
-        char promoChar = move[4];
+    int promotedPiece = NA;
+
+    if (moveStr.length() == 5) {
+        char promoChar = moveStr[4];
         switch (promoChar) {
         case 'Q': promotedPiece = wQ; break;
         case 'R': promotedPiece = wR; break;
@@ -39,34 +39,17 @@ pair<pair<int, int>, pair<int, int>> uciToCoords(const string& move, int& promot
         case 'r': promotedPiece = bR; break;
         case 'b': promotedPiece = bB; break;
         case 'n': promotedPiece = bN; break;
-        default: break; // Invalid promotion character make an error handler <----!!!!
+        default:
+            break;
         }
     }
 
-    return { from, to };
+    return Move(from.first, from.second, to.first, to.second, promotedPiece);
 }
 
-string coordsToUci(const vector<Move>& moves) {
-    auto getMove = [](int row, int col) -> string {
-        char file = col + 'a';
-        char rank = '8' - row;
-        return { file, rank };
-        };
-
-    string uciMoves = "";
-    for (const auto& move : moves) {
-        string from = getMove(move.startRow, move.startCol);
-        string to = getMove(move.endRow, move.endCol);
-
-        uciMoves += from + to + " ";
-    }
-
-    return uciMoves;
-}
-
-bool validMove(const vector<Move>& allMoves, int startRow, int startCol, int endRow, int endCol) {
+bool validMove(const vector<Move>& allMoves, Move playerMove) {
     for (const auto& move : allMoves) {
-        if (move.startRow == startRow && move.startCol == startCol && move.endRow == endRow && move.endCol == endCol) {
+        if (move.startRow == playerMove.startRow && move.startCol == playerMove.startCol && move.endRow == playerMove.endRow && move.endCol == playerMove.endCol) {
             return true; // Return true if a matching move is found
         }
     }

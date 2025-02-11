@@ -50,11 +50,11 @@ int Position::pieceColor(int row, int column) const {
     return -1;  // Empty square or invalid piece
 }
 
-void Position::movePiece(int startR, int startC, int endR, int endC, int promotedPiece) {
-    int piece = _board[startR][startC];
-    _board[startR][startC] = NA;
+void Position::movePiece(Move move) {
+    int piece = _board[move.startRow][move.startCol];
+    _board[move.startRow][move.startCol] = NA;
 
-    // Update castilng booleans *****NEED TO ALSO UPDATE WHEN ROOK IS CAPTURED BY ENEMY!*****
+    // Update castling booleans *****NEED TO ALSO UPDATE WHEN ROOK IS CAPTURED BY ENEMY!*****
     if (piece == wK) {
         _whiteKingMoved = true;
     }
@@ -62,44 +62,44 @@ void Position::movePiece(int startR, int startC, int endR, int endC, int promote
         _blackKingMoved = true;
     }
     else if (piece == wR) {
-        if (startR == 7 && startC == 0) {
+        if (move.startRow == 7 && move.startCol == 0) {
             _whiteQueensideRookMoved = true;
         }
-        else if (startR == 7 && startC == 7) {
+        else if (move.startRow == 7 && move.startCol == 7) {
             _whiteKingsideRookMoved = true;
         }
     }
     else if (piece == bR) {
-        if (startR == 0 && startC == 0) {
+        if (move.startRow == 0 && move.startCol == 0) {
             _blackQueensideRookMoved = true;
         }
-        else if (startR == 0 && startC == 7) {
+        else if (move.startRow == 0 && move.startCol == 7) {
             _blackKingsideRookMoved = true;
         }
     }
 
     // Pawn promotion
-    if ((piece == wP && endR == 0) || (piece == bP && endR == 7)) {
+    if ((piece == wP && move.endRow == 0) || (piece == bP && move.endRow == 7)) {
         // If promotedPiece is not specified, default to queen
-        if (promotedPiece == NA) {
-            promotedPiece = (piece == wP) ? wQ : bQ;
+        if (move.promotion == NA) {
+            move.promotion = (piece == wP) ? wQ : bQ;
         }
-        _board[endR][endC] = promotedPiece;
+        _board[move.endRow][move.endCol] = move.promotion;
     }
     else {
-        _board[endR][endC] = piece;
+        _board[move.endRow][move.endCol] = piece;
     }
 
     // Castling
     // If the king moves two squares, the move is a castling move
-    if ((piece == wK || piece == bK) && abs(startC - endC) == 2) {
-        if (endC == 6) {
-            _board[startR][7] = NA;
-            _board[startR][5] = (piece == wK) ? wR : bR;
+    if ((piece == wK || piece == bK) && abs(move.startCol - move.endCol) == 2) {
+        if (move.endCol == 6) {
+            _board[move.startRow][7] = NA;
+            _board[move.startRow][5] = (piece == wK) ? wR : bR;
         }
-        else if (endC == 2) {
-            _board[startR][0] = NA;
-            _board[startR][3] = (piece == wK) ? wR : bR;
+        else if (move.endCol == 2) {
+            _board[move.startRow][0] = NA;
+            _board[move.startRow][3] = (piece == wK) ? wR : bR;
         }
     }
 }
@@ -290,13 +290,11 @@ void Position::getLegalMoves(vector<Move> allMoves, vector<Move>& legalMoves) co
     int player = _moveturn; // Store the moving player's color
     int opponent = (player == WHITE ? BLACK : WHITE);
 
-    for (const auto& move : allMoves) {
+    for (Move& move : allMoves) {
         Position posCopy = *this;
 
-        posCopy.movePiece(move.startRow, move.startCol, move.endRow, move.endCol);
-
+        posCopy.movePiece(move);
         posCopy.findKing(player == WHITE ? wK : bK, kingRow, kingCol);
-
         if (!posCopy.isSquareUnderAttack(kingRow, kingCol, opponent)) {
             legalMoves.push_back(move); // The move is legal
         }
@@ -430,6 +428,49 @@ void Position::findKing(int piece, int& row, int& column) const {
     }
 }
 
+// esim.
+//MinimaxValue Position::minimax(int depth) {
+//    // Generoi aseman lailliset siirrot
+//    vector<Move> moves;
+//    // getLegalMoves(moves);
+//
+//    if (moves.size() == 0) {
+//        // return MinimaxValue(pisteyta_lopputulos(), Move())
+//    }
+//
+//    // Kantatapaus 2
+//    if (depth == 0) {
+//        // return MinimaxValue(evaluate(), Move())
+//    }
+//
+//    // Käydään siirrot läpi yksitellen
+//    float bestValue = _moveturn == WHITE ?
+//        numeric_limits<float>::min() : numeric_limits<float>::max();
+//    Move bestMove;
+//    for (Move& move : moves) {
+//        Position posCopy = *this;
+//        // posCopy.movePiece(move);
+//
+//        // Rekursioaskel. Tutkitaan uusi asema
+//        MinimaxValue value = posCopy.minimax(depth - 1);
+//
+//        // Tutkitaan paluuarvo
+//        if (_moveturn == WHITE && value._value > bestValue) {
+//            // Löydettiin uusi paras minimax arvo
+//            bestValue = value._value;
+//            bestMove = value._move;
+//        }
+//        else if (_moveturn == BLACK && value._value < bestValue) {
+//            // Löydettiin uusi paras minimax arvo
+//            bestValue = value._value;
+//            bestMove = value._move;
+//        }
+//    }
+//
+//    return MinimaxValue(bestValue, bestMove);
+//}
+
+// --- BOARD VISUALISATION ---
 void Position::emptyBoard() {
     for (int r = 0; r < 8; r++) {
         for (int c = 0; c < 8; c++) {

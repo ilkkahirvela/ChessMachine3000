@@ -5,6 +5,15 @@
 
 using namespace std;
 
+class MinimaxValue {
+public:
+    MinimaxValue(float value, Move move) :
+        _value(value), _move(move)
+    {}
+    float _value;
+    Move _move;
+};
+
 class Position {
 private:
     int _board[8][8] = {
@@ -38,7 +47,7 @@ public:
 
     void changeTurn();
     int pieceColor(int row, int column) const;
-    void movePiece(int startR, int startC, int endR, int endC, int promotedPiece = NA);
+    void movePiece(Move move);
     
     void getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const;
     void getRookMoves(int row, int column, vector<Move>& moves) const;
@@ -53,6 +62,8 @@ public:
 
     bool isSquareUnderAttack(int row, int col, int opponent) const;
     void findKing(int piece, int& row, int& column) const;
+    
+    // MinimaxValue minimax(int depth);
 
     void emptyBoard();
     void insertTestPiece(int r, int c, int piece);

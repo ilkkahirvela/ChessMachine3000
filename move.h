@@ -9,6 +9,9 @@ class Move {
 public:
     int startRow, startCol, endRow, endCol, promotion;
 
+    // Default constructor
+    Move();
+
     // Constructor to initialize move
     Move(int startRow, int startCol, int endRow, int endCol);
 

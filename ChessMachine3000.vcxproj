@@ -133,6 +133,7 @@
     <ClCompile Include="position.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="minimaxvalue.h" />
     <ClInclude Include="move.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="chess.h" />

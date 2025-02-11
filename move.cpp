@@ -5,7 +5,8 @@
 
 using namespace std;
 
-// Constructor to initialize move
+Move::Move() : startRow(-1), startCol(-1), endRow(-1), endCol(-1), promotion(-1) {}
+
 Move::Move(int startRow, int startCol, int endRow, int endCol)
     : startRow(startRow), startCol(startCol), endRow(endRow), endCol(endCol), promotion(-1) {}
 
