@@ -10,6 +10,7 @@ using namespace std;
 int main() {
 	Position pos;
 	pos._moveturn = WHITE;
+
 	vector<Move> allMoves, legalMoves;
 	Move playerMove;
 
@@ -26,30 +27,41 @@ int main() {
 		allMoves.clear();
 		legalMoves.clear();
 
-		cout << "Current board:" << endl;
-		pos.printBoard();
-
 		pos.getAllMoves(pos._moveturn, allMoves);
 		pos.getLegalMoves(allMoves, legalMoves);
 
-		for (const auto& move : legalMoves)
-			cout << move.toString() << " ";
-		cout << "\nTotal possible moves: " << legalMoves.size() << "\n";
-		
-		cout << "Material balance: " << pos.material() << "\n";
+		if (pos._moveturn == WHITE){
+			cout << "Current board:" << endl;
+			pos.printBoard();
 
-		cout << "Enter your move in UCI format: ";
-		string stringMove;
-		cin >> stringMove;
-		cout << "\n";
+			for (const auto& move : legalMoves)
+				cout << move.toString() << " ";
+			cout << "\nTotal possible moves: " << legalMoves.size() << "\n";
 
-		playerMove = uciToMove(stringMove);
-		if (validMove(legalMoves, playerMove)) {
-			pos.movePiece(playerMove);
-			pos.changeTurn();
+			cout << "Material balance: " << pos.material() << "\n";
+
+			cout << "Enter your move in UCI format: ";
+			string stringMove;
+			cin >> stringMove;
+			cout << "\n";
+
+			playerMove = uciToMove(stringMove);
+			if (validMove(legalMoves, playerMove)) {
+				pos.movePiece(playerMove);
+				pos.changeTurn();
+			}
+			else {
+				cout << "Invalid move. Try again." << endl;
+			}
 		}
 		else {
-			cout << "Invalid move. Try again." << endl;
+			MinimaxValue value = pos.minimax(3);
+			for (const auto& move : legalMoves)
+				cout << move.toString() << " ";
+			cout << "\nTotal possible moves for white: " << legalMoves.size() << "\n";
+			cout << "Minimaxvalue of the move made: " << value._value << endl;
+			pos.movePiece(value._move);
+			pos.changeTurn();
 		}
 	}
 	return 0;

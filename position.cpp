@@ -428,7 +428,7 @@ void Position::findKing(int piece, int& row, int& column) const {
     }
 }
 
-float Position::material() {
+float Position::material() const {
     float balance = 0.0f;
     for (int r = 0; r < 8; ++r) {
         for (int c = 0; c < 8; ++c) {
@@ -448,7 +448,6 @@ float Position::material() {
             case wQ:
                 balance += 9;
                 break;
-
             case bP:
                 balance -= 1;
                 break;
@@ -474,12 +473,8 @@ float Position::material() {
     return balance;
 }
 
-float Position::endResultScore() const {
-    return 0;
-}
-
 float Position::evaluate() const {
-    // return 1.0f * material() + 0.1f * mobiliteetti();
+    return 1.0f * material(); // +0.1f * mobiliteetti();
 
     // TODO
     // t‰ydent‰k‰‰ halutessanne uusilla pisteytett‰vill‰ aseman piirteill‰.
@@ -489,28 +484,48 @@ float Position::evaluate() const {
     return 0;
 }
 
+// Pisteytt‰‰ pelin lopputuloksen seuraavasti:
+// Valkea tehnyt matin			1000000
+// Tasapeli (patti)				0
+// Musta tehnyt matin		   -1000000
+// Funktiota kutsutaan, kun asemassa ei ole en‰‰ yht‰‰n laillista
+// siirtoa (anna_siirrot on palattanyt tyhj‰n siirtovektorin)
+float Position::endResultScore() const {
+    int wKrow, wKcol, bKrow, bKcol;
+    findKing(bK, bKrow, bKcol);
+    findKing(wK, wKrow, wKcol);
+
+    if (!isSquareUnderAttack(wKrow, wKcol, BLACK) && !isSquareUnderAttack(bKrow, bKcol, WHITE)) {
+        return 0;
+    }
+    else if (isSquareUnderAttack(bKrow, bKcol, WHITE)) {
+        return 1000000;
+    }
+    else if (isSquareUnderAttack(wKrow, wKcol, BLACK)) {
+        return -1000000;
+    }
+}
+
 // Palauttaa aseman minimax-arvon. Syvyys m‰‰ritt‰‰,
 // kuinka monta asekelta syvemm‰lle pelipuuta k‰yd‰‰n l‰pi.
 //
 // Testaaminen esim. p‰‰ohjelmasta:
-//
 // Asema asema;
 // MinimaxArvo arvo = asema.minimax(4);
 // 
 // Nyt tietokoneen siirto saadaan pelattua n‰in:
 // asema.tee_siirto(arvo._siirto);
-MinimaxValue Position::minimax(int depth, vector<Move> moves) {
-    if (moves.size() == 0)
-    {
-        // Rekursion kantatapaus 1:
-        // peli on p‰‰ttynyt (ei yht‰‰n laillista siirtoa).
+MinimaxValue Position::minimax(int depth) {
+    vector<Move> moves;
+    vector<Move> allMoves;
+
+    getAllMoves(_moveturn, allMoves);
+    getLegalMoves(allMoves, moves);
+
+    if (moves.size() == 0) {
         return MinimaxValue(endResultScore(), Move());
     }
-
-    if (depth == 0)
-    {
-        // Rekursion kantatapaus 2:
-        // ollaan katkaisusyvyydess‰.
+    if (depth == 0) {
         return MinimaxValue(evaluate(), Move());
     }
 
@@ -527,8 +542,8 @@ MinimaxValue Position::minimax(int depth, vector<Move> moves) {
         Position posCopy = *this;
         posCopy.movePiece(move);
 
-        // Rekursioasekel: kutsutaan minimax:ia seuraaja-asemalle.
-        MinimaxValue value = posCopy.minimax(depth - 1, moves);
+        // Rekursioaskel: kutsutaan minimax:ia seuraaja-asemalle.
+        MinimaxValue value = posCopy.minimax(depth - 1);
 
         // Jos saatiin paras arvo, otetaan se talteen.
         if (_moveturn == WHITE && value._value > bestValue)
