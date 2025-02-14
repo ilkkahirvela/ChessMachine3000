@@ -56,5 +56,33 @@ int main() {
 			pos.changeTurn();
 		}
 	}
+
+	// BOT VS BOT
+	//int whiteMoves = 0;
+	//while (whiteMoves < 25) {
+	//	if (pos._moveturn == WHITE){
+	//		MinimaxValue value = pos.minimax(3);
+	//		cout << "Minimaxvalue of whites move: " << value._value << endl;
+	//		
+	//		pos.movePiece(value._move);
+	//		whiteMoves++;
+
+	//		pos.printBoard();
+	//		Move botMove = value._move;
+	//		cout << "The bot did the move: " << botMove.toString() << endl;
+
+	//		pos.changeTurn();
+	//	}
+	//	else {
+	//		MinimaxValue value = pos.minimax(3);
+	//		cout << "Minimaxvalue of black's move: " << value._value << endl;
+	//		pos.movePiece(value._move);
+	//		pos.printBoard();
+	//		Move botMove = value._move;
+	//		cout << "The bot did the move: " << botMove.toString() << endl;
+
+	//		pos.changeTurn();
+	//	}
+	//}
 	return 0;
 }

@@ -562,37 +562,63 @@ float Position::endResultScore() const {
     }
 }
 
-MinimaxValue Position::minimax(int depth) {
-    // Generate legal moves for the current side.
+MinimaxValue Position::minimax(int depth, float alpha, float beta) {
+    // Generate legal moves for the current side
     vector<Move> allMoves;
     getAllMoves(_moveturn, allMoves);
     vector<Move> legalMoves;
     getLegalMoves(allMoves, legalMoves);
 
-    // Terminal node: no moves (checkmate/stalemate) or depth limit reached.
+    // No moves (checkmate/stalemate) or depth limit reached
     if (legalMoves.empty())
         return { endResultScore(), Move() };
     if (depth == 0)
         return { evaluate(), Move() };
 
-    // Initialize best value: maximize for White, minimize for Black.
-    float bestValue = (_moveturn == WHITE) ? numeric_limits<float>::lowest() : numeric_limits<float>::max();
     Move bestMove;
+    float bestValue;
 
-    // Explore each legal move.
-    for (const auto& move : legalMoves) {
-        Position child = *this;
-        child.movePiece(move);
-        float value = child.minimax(depth - 1)._value;
-
-        if ((_moveturn == WHITE && value > bestValue) ||
-            (_moveturn == BLACK && value < bestValue)) {
-            bestValue = value;
-            bestMove = move;
+    if (_moveturn == WHITE) {
+        bestValue = numeric_limits<float>::lowest();
+        // Maximizing player (White)
+        for (const auto& move : legalMoves) {
+            Position child = *this;
+            child.movePiece(move);
+            child.changeTurn();
+            MinimaxValue childVal = child.minimax(depth - 1, alpha, beta);
+            if (childVal._value > bestValue) {
+                bestValue = childVal._value;
+                bestMove = move;
+            }
+            alpha = max(alpha, bestValue);
+            if (beta <= alpha)
+                break;  // Beta cutoff
+        }
+    }
+    else {
+        bestValue = numeric_limits<float>::max();
+        // Minimizing player (Black)
+        for (const auto& move : legalMoves) {
+            Position child = *this;
+            child.movePiece(move);
+            child.changeTurn();
+            MinimaxValue childVal = child.minimax(depth - 1, alpha, beta);
+            if (childVal._value < bestValue) {
+                bestValue = childVal._value;
+                bestMove = move;
+            }
+            beta = min(beta, bestValue);
+            if (beta <= alpha)
+                break;  // Alpha cutoff
         }
     }
 
     return { bestValue, bestMove };
+}
+
+// Calls the alpha-beta version with initial values.
+MinimaxValue Position::minimax(int depth) {
+    return minimax(depth, numeric_limits<float>::lowest(), numeric_limits<float>::max());
 }
 
 // --- BOARD VISUALISATION ---

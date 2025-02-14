@@ -66,6 +66,7 @@ public:
     // Evaluates the score of a chess position
     float evaluate() const;
     float endResultScore() const;
+    MinimaxValue minimax(int depth, float alpha, float beta);
     MinimaxValue minimax(int depth);
 
     void emptyBoard();
