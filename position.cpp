@@ -151,7 +151,7 @@ void Position::getKingMoves(int row, int column, vector<Move>& moves) const {
         }
     }
 
-    // Castling Moves
+    // Castling Moves  CHECK FOR IF THE ROOK EXISTS!
     if (_moveturn == WHITE && !_whiteKingMoved) {
         // White kingside castling: King from e1 (7,4) to g1 (7,6)
         if (_board[7][5] == NA && _board[7][6] == NA && !_whiteKingsideRookMoved) {
