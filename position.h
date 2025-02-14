@@ -63,11 +63,8 @@ public:
     bool isSquareUnderAttack(int row, int col, int opponent) const;
     void findKing(int piece, int& row, int& column) const;
 
-    // Laskee materiaalitasapainon
-    float material() const;
-    // Pisteytt‰‰ shakkiaseman heuristisesti.
+    // Evaluates the score of a chess position
     float evaluate() const;
-    // Pisteytt‰‰ pelin lopputuloksen
     float endResultScore() const;
     MinimaxValue minimax(int depth);
 

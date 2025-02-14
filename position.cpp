@@ -428,138 +428,171 @@ void Position::findKing(int piece, int& row, int& column) const {
     }
 }
 
-float Position::material() const {
-    float balance = 0.0f;
+float Position::evaluate() const {
+    float score = 0.0f;
+
+    // Piece-square tables for White, Black's values are mirrored vertically
+    // Values could be fine-tuned
+    static const float pawnTable[8][8] = {
+        { 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f},
+        { 5.0f,  5.0f,  5.0f,  5.0f,  5.0f,  5.0f,  5.0f,  5.0f},
+        { 1.0f,  1.0f,  2.0f,  3.0f,  3.0f,  2.0f,  1.0f,  1.0f},
+        {0.5f,  0.5f,  1.0f, 2.5f, 2.5f,  1.0f, 0.5f, 0.5f},
+        { 0.0f,  0.0f,  0.0f,  2.0f,  2.0f,  0.0f,  0.0f,  0.0f},
+        {0.5f, -0.5f, -1.0f,  0.0f,  0.0f, -1.0f, -0.5f, 0.5f},
+        {0.5f,  1.0f,  1.0f, -2.0f, -2.0f,  1.0f,  1.0f, 0.5f},
+        { 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f}
+    };
+
+    static const float knightTable[8][8] = {
+        {-5.0f, -4.0f, -3.0f, -3.0f, -3.0f, -3.0f, -4.0f, -5.0f},
+        {-4.0f, -2.0f,  0.0f,  0.0f,  0.0f,  0.0f, -2.0f, -4.0f},
+        {-3.0f,  0.0f,  1.0f,  1.5f,  1.5f,  1.0f,  0.0f, -3.0f},
+        {-3.0f,  0.5f,  1.5f,  2.0f,  2.0f,  1.5f,  0.5f, -3.0f},
+        {-3.0f,  0.5f,  1.5f,  2.0f,  2.0f,  1.5f,  0.5f, -3.0f},
+        {-3.0f,  0.0f,  1.0f,  1.5f,  1.5f,  1.0f,  0.0f, -3.0f},
+        {-4.0f, -2.0f,  0.0f,  0.5f,  0.5f,  0.0f, -2.0f, -4.0f},
+        {-5.0f, -4.0f, -3.0f, -3.0f, -3.0f, -3.0f, -4.0f, -5.0f}
+    };
+
+    static const float bishopTable[8][8] = {
+        {-2.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -2.0f},
+        {-1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f, -1.0f},
+        {-1.0f,  0.0f,  0.5f,  1.0f,  1.0f,  0.5f,  0.0f, -1.0f},
+        {-1.0f,  0.5f,  1.0f,  1.0f,  1.0f,  1.0f,  0.5f, -1.0f},
+        {-1.0f,  0.5f,  1.0f,  1.0f,  1.0f,  1.0f,  0.5f, -1.0f},
+        {-1.0f,  0.0f,  0.5f,  1.0f,  1.0f,  0.5f,  0.0f, -1.0f},
+        {-1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f, -1.0f},
+        {-2.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -2.0f}
+    };
+
+    static const float rookTable[8][8] = {
+        { 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f},
+        {0.5f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f, 0.5f},
+        {-0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,-0.5f},
+        {-0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,-0.5f},
+        {-0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,-0.5f},
+        {-0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,-0.5f},
+        {-0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,-0.5f},
+        { 0.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.0f,  0.0f,  0.0f}
+    };
+
+    static const float queenTable[8][8] = {
+        {-2.0f, -1.0f, -1.0f, -0.5f, -0.5f, -1.0f, -1.0f, -2.0f},
+        {-1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f, -1.0f},
+        {-1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.5f,  0.0f, -1.0f},
+        {-0.5f,  0.0f,  0.5f,  0.5f,  0.5f,  0.5f,  0.0f, -0.5f},
+        { 0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.5f,  0.0f, -0.5f},
+        {-1.0f,  0.5f,  0.5f,  0.5f,  0.5f,  0.5f,  0.0f, -1.0f},
+        {-1.0f,  0.0f,  0.5f,  0.0f,  0.0f,  0.0f,  0.0f, -1.0f},
+        {-2.0f, -1.0f, -1.0f, -0.5f, -0.5f, -1.0f, -1.0f, -2.0f}
+    };
+
+    static const float kingTable[8][8] = {
+        {-3.0f, -4.0f, -4.0f, -5.0f, -5.0f, -4.0f, -4.0f, -3.0f},
+        {-3.0f, -4.0f, -4.0f, -5.0f, -5.0f, -4.0f, -4.0f, -3.0f},
+        {-3.0f, -4.0f, -4.0f, -5.0f, -5.0f, -4.0f, -4.0f, -3.0f},
+        {-3.0f, -4.0f, -4.0f, -5.0f, -5.0f, -4.0f, -4.0f, -3.0f},
+        {-2.0f, -3.0f, -3.0f, -4.0f, -4.0f, -3.0f, -3.0f, -2.0f},
+        {-1.0f, -2.0f, -2.0f, -2.0f, -2.0f, -2.0f, -2.0f, -1.0f},
+        { 2.0f,  2.0f,  0.0f,  0.0f,  0.0f,  0.0f,  2.0f,  2.0f},
+        { 2.0f,  3.0f,  1.0f,  0.0f,  0.0f,  1.0f,  3.0f,  2.0f}
+    };
+
+    // Iterate through board squares and accumulate score
     for (int r = 0; r < 8; ++r) {
         for (int c = 0; c < 8; ++c) {
             switch (_board[r][c]) {
             case wP:
-                balance += 1;
+                score += 1.0f + pawnTable[r][c];
                 break;
             case wN:
-                balance += 3;
+                score += 3.0f + knightTable[r][c];
                 break;
             case wB:
-                balance += 3;
+                score += 3.0f + bishopTable[r][c];
                 break;
             case wR:
-                balance += 5;
+                score += 5.0f + rookTable[r][c];
                 break;
             case wQ:
-                balance += 9;
+                score += 9.0f + queenTable[r][c];
+                break;
+            case wK:
+                score += kingTable[r][c];
                 break;
             case bP:
-                balance -= 1;
+                score -= 1.0f + pawnTable[7 - r][c];
                 break;
             case bN:
-                balance -= 3;
+                score -= 3.0f + knightTable[7 - r][c];
                 break;
             case bB:
-                balance -= 3;
+                score -= 3.0f + bishopTable[7 - r][c];
                 break;
             case bR:
-                balance -= 5;
+                score -= 5.0f + rookTable[7 - r][c];
                 break;
             case bQ:
-                balance -= 9;
+                score -= 9.0f + queenTable[7 - r][c];
                 break;
-
-            default: // empty
+            case bK:
+                score -= kingTable[7 - r][c];
+                break;
+            default: // empty square
                 break;
             }
         }
     }
-
-    return balance;
+    return score;
 }
 
-float Position::evaluate() const {
-    return 1.0f * material(); // +0.1f * mobiliteetti();
-
-    // TODO
-    // täydentäkää halutessanne uusilla pisteytettävillä aseman piirteillä.
-    // Mobiliteetin sijasta kannattanee pisteyttää materiaali nappuloiden
-    // keskeisen sijainin perusteella, ks. esim. 
-    // https://github.com/bytefire/Shutranj/blob/master/Shutranj.Engine/Evaluation2.cs
-    return 0;
-}
-
-// Pisteyttää pelin lopputuloksen seuraavasti:
-// Valkea tehnyt matin			1000000
-// Tasapeli (patti)				0
-// Musta tehnyt matin		   -1000000
-// Funktiota kutsutaan, kun asemassa ei ole enää yhtään laillista
-// siirtoa (anna_siirrot on palattanyt tyhjän siirtovektorin)
+// End-game scoring: White mate = +1e6, stalemate = 0, Black mate = -1e6.
+// Invoked when no legal moves remain (getLegalMoves returned an empty vector).
 float Position::endResultScore() const {
-    int wKrow, wKcol, bKrow, bKcol;
-    findKing(bK, bKrow, bKcol);
-    findKing(wK, wKrow, wKcol);
-
-    if (!isSquareUnderAttack(wKrow, wKcol, BLACK) && !isSquareUnderAttack(bKrow, bKcol, WHITE)) {
-        return 0;
+    if (_moveturn == WHITE) {
+        int wKrow, wKcol;
+        findKing(wK, wKrow, wKcol);
+        return isSquareUnderAttack(wKrow, wKcol, BLACK) ? -1000000.0f : 0.0f;
     }
-    else if (isSquareUnderAttack(bKrow, bKcol, WHITE)) {
-        return 1000000;
-    }
-    else if (isSquareUnderAttack(wKrow, wKcol, BLACK)) {
-        return -1000000;
+    else {
+        int bKrow, bKcol;
+        findKing(bK, bKrow, bKcol);
+        return isSquareUnderAttack(bKrow, bKcol, WHITE) ? 1000000.0f : 0.0f;
     }
 }
 
-// Palauttaa aseman minimax-arvon. Syvyys määrittää,
-// kuinka monta asekelta syvemmälle pelipuuta käydään läpi.
-//
-// Testaaminen esim. pääohjelmasta:
-// Asema asema;
-// MinimaxArvo arvo = asema.minimax(4);
-// 
-// Nyt tietokoneen siirto saadaan pelattua näin:
-// asema.tee_siirto(arvo._siirto);
 MinimaxValue Position::minimax(int depth) {
-    vector<Move> moves;
+    // Generate legal moves for the current side.
     vector<Move> allMoves;
-
     getAllMoves(_moveturn, allMoves);
-    getLegalMoves(allMoves, moves);
+    vector<Move> legalMoves;
+    getLegalMoves(allMoves, legalMoves);
 
-    if (moves.size() == 0) {
-        return MinimaxValue(endResultScore(), Move());
-    }
-    if (depth == 0) {
-        return MinimaxValue(evaluate(), Move());
-    }
+    // Terminal node: no moves (checkmate/stalemate) or depth limit reached.
+    if (legalMoves.empty())
+        return { endResultScore(), Move() };
+    if (depth == 0)
+        return { evaluate(), Move() };
 
-    // Siirtoja on jäljellä ja ei olla katkaisusyvyydessä,
-    // joten kokeillaan yksitellen mahdollisia siirtoja,
-    // ja kutsutaan minimax:a kullekin seuraaja-asemalle.
-    // Otetaan paras minimax-arvo talteen (alustetaan
-    // paras_arvo mahdollisimman huonoksi siirtovuoroisen
-    // pelaajan kannalta).
-    float bestValue = _moveturn == WHITE ? numeric_limits<float>::min() : numeric_limits<float>::max();
+    // Initialize best value: maximize for White, minimize for Black.
+    float bestValue = (_moveturn == WHITE) ? numeric_limits<float>::lowest() : numeric_limits<float>::max();
     Move bestMove;
-    for (Move& move : moves)
-    {
-        Position posCopy = *this;
-        posCopy.movePiece(move);
 
-        // Rekursioaskel: kutsutaan minimax:ia seuraaja-asemalle.
-        MinimaxValue value = posCopy.minimax(depth - 1);
+    // Explore each legal move.
+    for (const auto& move : legalMoves) {
+        Position child = *this;
+        child.movePiece(move);
+        float value = child.minimax(depth - 1)._value;
 
-        // Jos saatiin paras arvo, otetaan se talteen.
-        if (_moveturn == WHITE && value._value > bestValue)
-        {
-            bestValue = value._value;
-            bestMove = move;
-        }
-        else if (_moveturn == BLACK && value._value < bestValue)
-        {
-            bestValue = value._value;
+        if ((_moveturn == WHITE && value > bestValue) ||
+            (_moveturn == BLACK && value < bestValue)) {
+            bestValue = value;
             bestMove = move;
         }
     }
 
-    // Palautetaan paras arvo.
-    return MinimaxValue(bestValue, bestMove);
+    return { bestValue, bestMove };
 }
 
 // --- BOARD VISUALISATION ---

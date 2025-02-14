@@ -14,23 +14,14 @@ int main() {
 	vector<Move> allMoves, legalMoves;
 	Move playerMove;
 
-	// Castling test
-	//pos.emptyBoard();
-	//pos.insertTestPiece(7, 4, wK);
-	//pos.insertTestPiece(7, 0, wR);
-	//pos.insertTestPiece(7, 7, wR);
-	//pos.insertTestPiece(0, 4, bK);
-	//pos.insertTestPiece(0, 0, bR);
-	//pos.insertTestPiece(0, 7, bR);
-
 	while (true) {
-		allMoves.clear();
-		legalMoves.clear();
-
-		pos.getAllMoves(pos._moveturn, allMoves);
-		pos.getLegalMoves(allMoves, legalMoves);
-
 		if (pos._moveturn == WHITE){
+			allMoves.clear();
+			legalMoves.clear();
+
+			pos.getAllMoves(pos._moveturn, allMoves);
+			pos.getLegalMoves(allMoves, legalMoves);
+
 			cout << "Current board:" << endl;
 			pos.printBoard();
 
@@ -38,7 +29,7 @@ int main() {
 				cout << move.toString() << " ";
 			cout << "\nTotal possible moves: " << legalMoves.size() << "\n";
 
-			cout << "Material balance: " << pos.material() << "\n";
+			cout << "Position score balance: " << pos.evaluate() << "\n";
 
 			cout << "Enter your move in UCI format: ";
 			string stringMove;
@@ -55,12 +46,13 @@ int main() {
 			}
 		}
 		else {
-			MinimaxValue value = pos.minimax(3);
-			for (const auto& move : legalMoves)
-				cout << move.toString() << " ";
-			cout << "\nTotal possible moves for white: " << legalMoves.size() << "\n";
+			MinimaxValue value = pos.minimax(4);
 			cout << "Minimaxvalue of the move made: " << value._value << endl;
 			pos.movePiece(value._move);
+
+			Move botMove = value._move;
+			cout << "The bot did the move: " << botMove.toString() << endl;
+
 			pos.changeTurn();
 		}
 	}
