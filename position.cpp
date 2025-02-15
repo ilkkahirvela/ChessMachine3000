@@ -52,46 +52,61 @@ int Position::pieceColor(int row, int column) const {
 
 void Position::movePiece(Move move) {
     int piece = _board[move.startRow][move.startCol];
+
+    // Clear en passant square.
+    _enPassantSquare = { -1, -1 };
+
+    // Check for en passant capture.
+    bool isEnPassant = (piece == wP || piece == bP) &&
+        (abs(move.startCol - move.endCol) == 1) &&
+        (_board[move.endRow][move.endCol] == NA);
+
+    // Remove the piece from its starting square.
     _board[move.startRow][move.startCol] = NA;
 
-    // Update castling booleans *****NEED TO ALSO UPDATE WHEN ROOK IS CAPTURED BY ENEMY!*****
-    if (piece == wK) {
+    // Update castling flags.
+    if (piece == wK)
         _whiteKingMoved = true;
-    }
-    else if (piece == bK) {
+    else if (piece == bK)
         _blackKingMoved = true;
-    }
     else if (piece == wR) {
-        if (move.startRow == 7 && move.startCol == 0) {
+        if (move.startRow == 7 && move.startCol == 0)
             _whiteQueensideRookMoved = true;
-        }
-        else if (move.startRow == 7 && move.startCol == 7) {
+        else if (move.startRow == 7 && move.startCol == 7)
             _whiteKingsideRookMoved = true;
-        }
     }
     else if (piece == bR) {
-        if (move.startRow == 0 && move.startCol == 0) {
+        if (move.startRow == 0 && move.startCol == 0)
             _blackQueensideRookMoved = true;
-        }
-        else if (move.startRow == 0 && move.startCol == 7) {
+        else if (move.startRow == 0 && move.startCol == 7)
             _blackKingsideRookMoved = true;
-        }
     }
 
-    // Pawn promotion
+    // Pawn promotion.
     if ((piece == wP && move.endRow == 0) || (piece == bP && move.endRow == 7)) {
-        // If promotedPiece is not specified, default to queen
-        if (move.promotion == NA) {
+        if (move.promotion == NA)
             move.promotion = (piece == wP) ? wQ : bQ;
-        }
         _board[move.endRow][move.endCol] = move.promotion;
     }
     else {
         _board[move.endRow][move.endCol] = piece;
     }
 
-    // Castling
-    // If the king moves two squares, the move is a castling move
+    // Handle en passant capture.
+    if (isEnPassant) {
+        if (piece == wP)
+            _board[move.endRow + 1][move.endCol] = NA;
+        else
+            _board[move.endRow - 1][move.endCol] = NA;
+    }
+
+    // Set en passant square for two-square pawn moves.
+    if (piece == wP && move.startRow - move.endRow == 2)
+        _enPassantSquare = { move.startRow - 1, move.startCol };
+    else if (piece == bP && move.endRow - move.startRow == 2)
+        _enPassantSquare = { move.startRow + 1, move.startCol };
+
+    // Handle castling.
     if ((piece == wK || piece == bK) && abs(move.startCol - move.endCol) == 2) {
         if (move.endCol == 6) {
             _board[move.startRow][7] = NA;
@@ -139,54 +154,45 @@ void Position::getQueenMoves(int row, int column, vector<Move>& moves) const {
 }
 
 void Position::getKingMoves(int row, int column, vector<Move>& moves) const {
-    for (const auto& move : _kingMoves) {
-        int r = row + move.first;
-        int c = column + move.second;
-
+    // Normal king moves
+    for (const auto& offset : _kingMoves) {
+        int r = row + offset.first;
+        int c = column + offset.second;
         if (r >= 0 && r < 8 && c >= 0 && c < 8) {
-            int piece = pieceColor(r, c);
-            if (piece == -1 || piece != _moveturn) {
+            int p = pieceColor(r, c);
+            if (p == -1 || p != _moveturn)
                 moves.push_back(Move(row, column, r, c));
-            }
         }
     }
 
-    // Castling Moves  CHECK FOR IF THE ROOK EXISTS!
+    // Castling check function
+    auto canCastle = [&](int row, int kingCol, const vector<int>& path, int rookCol, int opponent) -> bool {
+        // Ensure the rook is present and hasn't moved
+        if (_board[row][rookCol] != ((_moveturn == WHITE) ? wR : bR))
+            return false;
+        // Ensure the path between king and rook is clear
+        for (int col : path)
+            if (_board[row][col] != NA)
+                return false;
+        // Ensure king's path is not under attack
+        for (int col : { kingCol, path.back() })
+            if (isSquareUnderAttack(row, col, opponent))
+                return false;
+        return true;
+        };
+
+    // Castling moves
     if (_moveturn == WHITE && !_whiteKingMoved) {
-        // White kingside castling: King from e1 (7,4) to g1 (7,6)
-        if (_board[7][5] == NA && _board[7][6] == NA && !_whiteKingsideRookMoved) {
-            if (!isSquareUnderAttack(7, 4, BLACK) &&
-                !isSquareUnderAttack(7, 5, BLACK) &&
-                !isSquareUnderAttack(7, 6, BLACK)) {
-                moves.push_back(Move(7, 4, 7, 6));
-            }
-        }
-        // White queenside castling: King from e1 (7,4) to c1 (7,2)
-        if (_board[7][3] == NA && _board[7][2] == NA && _board[7][1] == NA && !_whiteQueensideRookMoved) {
-            if (!isSquareUnderAttack(7, 4, BLACK) &&
-                !isSquareUnderAttack(7, 3, BLACK) &&
-                !isSquareUnderAttack(7, 2, BLACK)) {
-                moves.push_back(Move(7, 4, 7, 2));
-            }
-        }
+        if (!_whiteKingsideRookMoved && canCastle(7, 4, { 5, 6 }, 7, BLACK))
+            moves.push_back(Move(7, 4, 7, 6));
+        if (!_whiteQueensideRookMoved && canCastle(7, 4, { 1, 2, 3 }, 0, BLACK))
+            moves.push_back(Move(7, 4, 7, 2));
     }
     else if (_moveturn == BLACK && !_blackKingMoved) {
-        // Black kingside castling: King from e8 (0,4) to g8 (0,6)
-        if (_board[0][5] == NA && _board[0][6] == NA && !_blackKingsideRookMoved) {
-            if (!isSquareUnderAttack(0, 4, WHITE) &&
-                !isSquareUnderAttack(0, 5, WHITE) &&
-                !isSquareUnderAttack(0, 6, WHITE)) {
-                moves.push_back(Move(0, 4, 0, 6));
-            }
-        }
-        // Black queenside castling: King from e8 (0,4) to c8 (0,2)
-        if (_board[0][3] == NA && _board[0][2] == NA && _board[0][1] == NA && !_blackQueensideRookMoved) {
-            if (!isSquareUnderAttack(0, 4, WHITE) &&
-                !isSquareUnderAttack(0, 3, WHITE) &&
-                !isSquareUnderAttack(0, 2, WHITE)) {
-                moves.push_back(Move(0, 4, 0, 2));
-            }
-        }
+        if (!_blackKingsideRookMoved && canCastle(0, 4, { 5, 6 }, 7, WHITE))
+            moves.push_back(Move(0, 4, 0, 6));
+        if (!_blackQueensideRookMoved && canCastle(0, 4, { 1, 2, 3 }, 0, WHITE))
+            moves.push_back(Move(0, 4, 0, 2));
     }
 }
 
@@ -205,12 +211,11 @@ void Position::getKnightMoves(int row, int column, vector<Move>& moves) const {
 }
 
 void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves, int player) const {
-    int direction = (piece == wP) ? -1 : 1; // White pawns move up (-1), black pawns move down (+1)
+    int direction = (piece == wP) ? -1 : 1; // White moves up (-1), Black moves down (+1)
     int startRow = (piece == wP) ? 6 : 1;
-    int promotionRow = (piece == wP) ? 0 : 7; 
-
-    // Single forward move
+    int promotionRow = (piece == wP) ? 0 : 7;
     int forwardRow = row + direction;
+
     if (forwardRow >= 0 && forwardRow < 8 && _board[forwardRow][column] == NA) {
         // Promotion handling
         if (forwardRow == promotionRow) {
@@ -225,7 +230,7 @@ void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves,
                 }
             }
         }
-        // No promotion available
+        // Normal move
         else {
             moves.push_back(Move(row, column, forwardRow, column));
 
@@ -238,7 +243,7 @@ void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves,
     }
 
     // Capturing diagonally
-    for (int dc : {-1, 1}) {  // Diagonal directions
+    for (int dc : {-1, 1}) {
         int captureRow = row + direction;
         int captureCol = column + dc;
         if (captureRow >= 0 && captureRow < 8 && captureCol >= 0 && captureCol < 8) {
@@ -250,7 +255,30 @@ void Position::getPawnMoves(int row, int column, int piece, vector<Move>& moves,
     }
 
     // En passant
-    
+    if (_enPassantSquare.first != -1) {
+        // For white pawn capturing en passant:
+        if (player == WHITE && row == 3) {
+            for (int dc : {-1, 1}) {
+                int targetCol = column + dc;
+                if (targetCol >= 0 && targetCol < 8) {
+                    if (_enPassantSquare.first == row - 1 && _enPassantSquare.second == targetCol) {
+                        moves.push_back(Move(row, column, row - 1, targetCol));
+                    }
+                }
+            }
+        }
+        // For black pawn capturing en passant:
+        else if (player == BLACK && row == 4) {
+            for (int dc : {-1, 1}) {
+                int targetCol = column + dc;
+                if (targetCol >= 0 && targetCol < 8) {
+                    if (_enPassantSquare.first == row + 1 && _enPassantSquare.second == targetCol) {
+                        moves.push_back(Move(row, column, row + 1, targetCol));
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Position::getAllMoves(int player, vector<Move>& moves) const {
@@ -302,117 +330,59 @@ void Position::getLegalMoves(vector<Move> allMoves, vector<Move>& legalMoves) co
 }
 
 bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
-    // Loop through every square
-    for (int r = 0; r < 8; ++r) {
-        for (int c = 0; c < 8; ++c) {
-            int piece = _board[r][c];
-            if (piece == NA) { // Skip empty squares
-                continue;  
-            }
-            if (pieceColor(r, c) != opponent) {
-                continue;
-            }
-            switch (piece) {
-                // Pawn
-            case wP:
-            case bP: {
-                if (opponent == WHITE) {
-                    if ((r - 1 == row && c - 1 == col) ||
-                        (r - 1 == row && c + 1 == col)) {
-                        return true;
-                    }
-                }
-                else {  // opponent == BLACK
-                    if ((r + 1 == row && c - 1 == col) ||
-                        (r + 1 == row && c + 1 == col)) {
-                        return true;
-                    }
-                }
-                break;
-            }
-                   // Knight
-            case wN:
-            case bN: {
-                for (const auto& offset : _knightOffsets) {
-                    if (r + offset.first == row && c + offset.second == col) {
-                        return true;
-                    }
-                }
-                break;
-            }
-                   // King
-            case wK:
-            case bK: {
-                for (const auto& move : _kingMoves) {
-                    if (r + move.first == row && c + move.second == col) {
-                        return true;
-                    }
-                }
-                break;
-            }
-                   // Rook
-            case wR:
-            case bR: {
-                for (const auto& dir : _rookDirections) {
-                    int rr = r + dir.first;
-                    int cc = c + dir.second;
-                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
-                        if (rr == row && cc == col) {
-                            return true;
-                        }
-                        if (_board[rr][cc] != NA) {
-                            break;
-                        }
-                        rr += dir.first;
-                        cc += dir.second;
-                    }
-                }
-                break;
-            }
-                   // Bishop
-            case wB:
-            case bB: {
-                for (const auto& dir : _bishopDirections) {
-                    int rr = r + dir.first;
-                    int cc = c + dir.second;
-                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
-                        if (rr == row && cc == col) {
-                            return true;
-                        }
-                        if (_board[rr][cc] != NA) {
-                            break;
-                        }
-                        rr += dir.first;
-                        cc += dir.second;
-                    }
-                }
-                break;
-            }
-                   // Queen
-            case wQ:
-            case bQ: {
-                for (const auto& dir : _queenDirections) {
-                    int rr = r + dir.first;
-                    int cc = c + dir.second;
-                    while (rr >= 0 && rr < 8 && cc >= 0 && cc < 8) {
-                        if (rr == row && cc == col) {
-                            return true;
-                        }
-                        if (_board[rr][cc] != NA) {
-                            break;
-                        }
-                        rr += dir.first;
-                        cc += dir.second;
-                    }
-                }
-                break;
-            }
-            default:
-                break;
-            }
+    // Pawn attacks
+    if (opponent == WHITE) {
+        if ((row - 1 >= 0 && col - 1 >= 0 && _board[row - 1][col - 1] == wP) ||
+            (row - 1 >= 0 && col + 1 < 8 && _board[row - 1][col + 1] == wP)) {
+            return true;
         }
     }
-    // If no opponent piece attacks the square, return false.
+    else {
+        if ((row + 1 < 8 && col - 1 >= 0 && _board[row + 1][col - 1] == bP) ||
+            (row + 1 < 8 && col + 1 < 8 && _board[row + 1][col + 1] == bP)) {
+            return true;
+        }
+    }
+
+    // Knight attacks
+    for (const auto& offset : _knightOffsets) {
+        int r = row + offset.first, c = col + offset.second;
+        if (r >= 0 && r < 8 && c >= 0 && c < 8 && _board[r][c] == (opponent == WHITE ? wN : bN)) {
+            return true;
+        }
+    }
+
+    // King attacks
+    for (const auto& move : _kingMoves) {
+        int r = row + move.first, c = col + move.second;
+        if (r >= 0 && r < 8 && c >= 0 && c < 8 && _board[r][c] == (opponent == WHITE ? wK : bK)) {
+            return true;
+        }
+    }
+
+    // Sliding pieces (Rook, Bishop, Queen)
+    for (const auto& dir : _queenDirections) {
+        int r = row + dir.first, c = col + dir.second;
+        while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int piece = _board[r][c];
+            if (piece != NA) {
+                if ((dir == _rookDirections[0] || dir == _rookDirections[1] ||
+                    dir == _rookDirections[2] || dir == _rookDirections[3]) &&
+                    (piece == (opponent == WHITE ? wR : bR) || piece == (opponent == WHITE ? wQ : bQ))) {
+                    return true;
+                }
+                if ((dir == _bishopDirections[0] || dir == _bishopDirections[1] ||
+                    dir == _bishopDirections[2] || dir == _bishopDirections[3]) &&
+                    (piece == (opponent == WHITE ? wB : bB) || piece == (opponent == WHITE ? wQ : bQ))) {
+                    return true;
+                }
+                break; // Blocked path
+            }
+            r += dir.first;
+            c += dir.second;
+        }
+    }
+
     return false;
 }
 

@@ -11,7 +11,7 @@ int main() {
 	Position pos;
 	pos._moveturn = WHITE;
 
-	vector<Move> allMoves, legalMoves;
+	/*vector<Move> allMoves, legalMoves;
 	Move playerMove;
 
 	while (true) {
@@ -27,9 +27,9 @@ int main() {
 
 			for (const auto& move : legalMoves)
 				cout << move.toString() << " ";
-			cout << "\nTotal possible moves: " << legalMoves.size() << "\n";
+			cout << endl << "Total possible moves : " << legalMoves.size() << endl;
 
-			cout << "Position score balance: " << pos.evaluate() << "\n";
+			cout << "Position score balance: " << pos.evaluate() << endl;
 
 			cout << "Enter your move in UCI format: ";
 			string stringMove;
@@ -55,34 +55,18 @@ int main() {
 
 			pos.changeTurn();
 		}
-	}
+	}*/
 
 	// BOT VS BOT
-	//int whiteMoves = 0;
-	//while (whiteMoves < 25) {
-	//	if (pos._moveturn == WHITE){
-	//		MinimaxValue value = pos.minimax(3);
-	//		cout << "Minimaxvalue of whites move: " << value._value << endl;
-	//		
-	//		pos.movePiece(value._move);
-	//		whiteMoves++;
+	int moveCount = 0;
+	while (moveCount < 300) {
+		MinimaxValue value = pos.minimax(3);
+		pos.movePiece(value._move);
+		pos.printBoard();
+		cout << "Move played: " << value._move.toString() << " Total moves: " << moveCount << endl;
+		pos.changeTurn();
+		moveCount++;
+	}
 
-	//		pos.printBoard();
-	//		Move botMove = value._move;
-	//		cout << "The bot did the move: " << botMove.toString() << endl;
-
-	//		pos.changeTurn();
-	//	}
-	//	else {
-	//		MinimaxValue value = pos.minimax(3);
-	//		cout << "Minimaxvalue of black's move: " << value._value << endl;
-	//		pos.movePiece(value._move);
-	//		pos.printBoard();
-	//		Move botMove = value._move;
-	//		cout << "The bot did the move: " << botMove.toString() << endl;
-
-	//		pos.changeTurn();
-	//	}
-	//}
 	return 0;
 }

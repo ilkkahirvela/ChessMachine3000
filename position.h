@@ -40,7 +40,7 @@ private:
     bool _blackKingsideRookMoved = false;
     bool _blackQueensideRookMoved = false;
 
-    int _kaksoisaskel_linjalla = -1;
+    pair<int, int> _enPassantSquare = { -1, -1 };
 
 public:
     int _moveturn = WHITE;
