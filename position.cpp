@@ -360,7 +360,7 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
         }
     }
 
-    // Sliding pieces (Rook, Bishop, Queen)
+    // Rook, Bishop, Queen
     for (const auto& dir : _queenDirections) {
         int r = row + dir.first, c = col + dir.second;
         while (r >= 0 && r < 8 && c >= 0 && c < 8) {
@@ -520,15 +520,14 @@ float Position::evaluate() const {
 // End-game scoring: White mate = +1e6, stalemate = 0, Black mate = -1e6.
 // Invoked when no legal moves remain (getLegalMoves returned an empty vector).
 float Position::endResultScore() const {
+    int kingRow, kingCol;
     if (_moveturn == WHITE) {
-        int wKrow, wKcol;
-        findKing(wK, wKrow, wKcol);
-        return isSquareUnderAttack(wKrow, wKcol, BLACK) ? -1000000.0f : 0.0f;
+        findKing(wK, kingRow, kingCol);
+        return isSquareUnderAttack(kingRow, kingCol, BLACK) ? -1000000.0f : 0.0f;
     }
     else {
-        int bKrow, bKcol;
-        findKing(bK, bKrow, bKcol);
-        return isSquareUnderAttack(bKrow, bKcol, WHITE) ? 1000000.0f : 0.0f;
+        findKing(bK, kingRow, kingCol);
+        return isSquareUnderAttack(kingRow, kingCol, WHITE) ? 1000000.0f : 0.0f;
     }
 }
 
@@ -539,7 +538,7 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
     vector<Move> legalMoves;
     getLegalMoves(allMoves, legalMoves);
 
-    // No moves (checkmate/stalemate) or depth limit reached
+    // No moves or depth limit reached
     if (legalMoves.empty())
         return { endResultScore(), Move() };
     if (depth == 0)
@@ -550,7 +549,7 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
 
     if (_moveturn == WHITE) {
         bestValue = numeric_limits<float>::lowest();
-        // Maximizing player (White)
+        // Maximizing player
         for (const auto& move : legalMoves) {
             Position child = *this;
             child.movePiece(move);
@@ -567,7 +566,7 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
     }
     else {
         bestValue = numeric_limits<float>::max();
-        // Minimizing player (Black)
+        // Minimizing player
         for (const auto& move : legalMoves) {
             Position child = *this;
             child.movePiece(move);

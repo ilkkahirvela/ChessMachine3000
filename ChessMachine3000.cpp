@@ -9,7 +9,6 @@ using namespace std;
 
 int main() {
 	Position pos;
-	pos._moveturn = WHITE;
 
 	/*vector<Move> allMoves, legalMoves;
 	Move playerMove;
