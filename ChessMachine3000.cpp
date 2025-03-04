@@ -56,7 +56,7 @@ int main() {
 		}
 	}*/
 
-	// BOT VS BOT
+	// BOT VS BOT xd
 	int moveCount = 0;
 	while (moveCount < 300) {
 		MinimaxValue value = pos.minimax(3);
