@@ -3,6 +3,8 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -50,18 +52,50 @@ int Position::pieceColor(int row, int column) const {
     return -1;  // Empty square or invalid piece
 }
 
-void Position::movePiece(Move move) {
-    int piece = _board[move.startRow][move.startCol];
+UndoInfo Position::movePiece(Move move) {
+    UndoInfo undo;
+    // Save moved piece.
+    undo.movedPiece = _board[move.startRow][move.startCol];
+    // Save captured piece (if any).
+    undo.capturedPiece = _board[move.endRow][move.endCol];
+    undo.capturedPieceSquare = { move.endRow, move.endCol };
+    undo.enPassantCapture = false;
 
-    // Clear en passant square.
+    // Save castling rights and en passant square.
+    undo.whiteKingMoved = _whiteKingMoved;
+    undo.whiteKingsideRookMoved = _whiteKingsideRookMoved;
+    undo.whiteQueensideRookMoved = _whiteQueensideRookMoved;
+    undo.blackKingMoved = _blackKingMoved;
+    undo.blackKingsideRookMoved = _blackKingsideRookMoved;
+    undo.blackQueensideRookMoved = _blackQueensideRookMoved;
+    undo.enPassantSquare = _enPassantSquare;
+
+    undo.castlingMove = false; // Not a castling move by default.
+
+    int piece = undo.movedPiece;
+
+    // Clear en passant.
     _enPassantSquare = { -1, -1 };
 
-    // Check for en passant capture.
+    // Handle en passant capture.
     bool isEnPassant = (piece == wP || piece == bP) &&
         (abs(move.startCol - move.endCol) == 1) &&
         (_board[move.endRow][move.endCol] == NA);
+    if (isEnPassant) {
+        undo.enPassantCapture = true;
+        if (piece == wP) {
+            undo.capturedPiece = _board[move.endRow + 1][move.endCol];
+            undo.capturedPieceSquare = { move.endRow + 1, move.endCol };
+            _board[move.endRow + 1][move.endCol] = NA;
+        }
+        else {
+            undo.capturedPiece = _board[move.endRow - 1][move.endCol];
+            undo.capturedPieceSquare = { move.endRow - 1, move.endCol };
+            _board[move.endRow - 1][move.endCol] = NA;
+        }
+    }
 
-    // Remove the piece from its starting square.
+    // Remove piece from the start.
     _board[move.startRow][move.startCol] = NA;
 
     // Update castling flags.
@@ -82,7 +116,7 @@ void Position::movePiece(Move move) {
             _blackKingsideRookMoved = true;
     }
 
-    // Pawn promotion.
+    // Handle pawn promotion.
     if ((piece == wP && move.endRow == 0) || (piece == bP && move.endRow == 7)) {
         if (move.promotion == NA)
             move.promotion = (piece == wP) ? wQ : bQ;
@@ -92,32 +126,58 @@ void Position::movePiece(Move move) {
         _board[move.endRow][move.endCol] = piece;
     }
 
-    // Handle en passant capture.
-    if (isEnPassant) {
-        if (piece == wP)
-            _board[move.endRow + 1][move.endCol] = NA;
-        else
-            _board[move.endRow - 1][move.endCol] = NA;
-    }
-
-    // Set en passant square for two-square pawn moves.
-    if (piece == wP && move.startRow - move.endRow == 2)
-        _enPassantSquare = { move.startRow - 1, move.startCol };
-    else if (piece == bP && move.endRow - move.startRow == 2)
-        _enPassantSquare = { move.startRow + 1, move.startCol };
-
-    // Handle castling.
+    // Handle castling move.
     if ((piece == wK || piece == bK) && abs(move.startCol - move.endCol) == 2) {
-        if (move.endCol == 6) {
+        undo.castlingMove = true;
+        if (move.endCol == 6) { // Kingside.
+            undo.rookFromRow = move.startRow;
+            undo.rookFromCol = 7;
+            undo.rookToRow = move.startRow;
+            undo.rookToCol = 5;
             _board[move.startRow][7] = NA;
             _board[move.startRow][5] = (piece == wK) ? wR : bR;
         }
-        else if (move.endCol == 2) {
+        else if (move.endCol == 2) { // Queenside.
+            undo.rookFromRow = move.startRow;
+            undo.rookFromCol = 0;
+            undo.rookToRow = move.startRow;
+            undo.rookToCol = 3;
             _board[move.startRow][0] = NA;
             _board[move.startRow][3] = (piece == wK) ? wR : bR;
         }
     }
+
+    return undo;
 }
+
+void Position::undoMove(Move move, const UndoInfo& undo) {
+    int piece = undo.movedPiece;
+
+    // Remove moved piece from destination and restore it to the start.
+    _board[move.endRow][move.endCol] = NA;
+    _board[move.startRow][move.startCol] = piece;
+
+    // Restore captured piece, if any.
+    if (undo.capturedPiece != NA) {
+        _board[undo.capturedPieceSquare.first][undo.capturedPieceSquare.second] = undo.capturedPiece;
+    }
+
+    // Undo castling by moving the rook back.
+    if (undo.castlingMove) {
+        _board[undo.rookFromRow][undo.rookFromCol] = _board[undo.rookToRow][undo.rookToCol];
+        _board[undo.rookToRow][undo.rookToCol] = NA;
+    }
+
+    // Restore castling rights and en passant square.
+    _whiteKingMoved = undo.whiteKingMoved;
+    _whiteKingsideRookMoved = undo.whiteKingsideRookMoved;
+    _whiteQueensideRookMoved = undo.whiteQueensideRookMoved;
+    _blackKingMoved = undo.blackKingMoved;
+    _blackKingsideRookMoved = undo.blackKingsideRookMoved;
+    _blackQueensideRookMoved = undo.blackQueensideRookMoved;
+    _enPassantSquare = undo.enPassantSquare;
+}
+
 
 void Position::getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const {
     for (const auto& dir : directions) {
@@ -542,7 +602,7 @@ float Position::endResultScore(int depth) const {
 }
 
 MinimaxValue Position::minimax(int depth, float alpha, float beta) {
-    // Generate legal moves for the current side
+    // Generate legal moves for the current side.
     vector<Move> allMoves;
     allMoves.reserve(100);
     getAllMoves(_moveturn, allMoves);
@@ -550,7 +610,7 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
     legalMoves.reserve(100);
     getLegalMoves(allMoves, legalMoves);
 
-    // No moves or depth limit reached
+    // Terminal conditions.
     if (legalMoves.empty())
         return { endResultScore(depth), Move() };
     if (depth == 0)
@@ -561,36 +621,44 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
 
     if (_moveturn == WHITE) {
         bestValue = numeric_limits<float>::lowest();
-        // Maximizing player
+        // Maximizing player.
         for (const auto& move : legalMoves) {
-            Position child = *this;
-            child.movePiece(move);
-            child.changeTurn();
-            MinimaxValue childVal = child.minimax(depth - 1, alpha, beta);
+            // Make the move in-place and record the undo state.
+            UndoInfo undo = movePiece(move);
+            // Switch turn so that minimax is called for the opponent.
+            changeTurn();
+            MinimaxValue childVal = minimax(depth - 1, alpha, beta);
+            // Revert the turn back.
+            changeTurn();
+            // Unmake the move to restore the board state.
+            undoMove(move, undo);
+
             if (childVal._value > bestValue) {
                 bestValue = childVal._value;
                 bestMove = move;
             }
             alpha = max(alpha, bestValue);
             if (beta <= alpha)
-                break;  // Beta cutoff
+                break;  // Beta cutoff.
         }
     }
     else {
         bestValue = numeric_limits<float>::max();
-        // Minimizing player
+        // Minimizing player.
         for (const auto& move : legalMoves) {
-            Position child = *this;
-            child.movePiece(move);
-            child.changeTurn();
-            MinimaxValue childVal = child.minimax(depth - 1, alpha, beta);
+            UndoInfo undo = movePiece(move);
+            changeTurn();
+            MinimaxValue childVal = minimax(depth - 1, alpha, beta);
+            changeTurn();
+            undoMove(move, undo);
+
             if (childVal._value < bestValue) {
                 bestValue = childVal._value;
                 bestMove = move;
             }
             beta = min(beta, bestValue);
             if (beta <= alpha)
-                break;  // Alpha cutoff
+                break;  // Alpha cutoff.
         }
     }
 

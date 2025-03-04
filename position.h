@@ -14,6 +14,35 @@ public:
     Move _move;
 };
 
+
+// The UndoInfo struct stores state before a move is applied.
+struct UndoInfo {
+    int movedPiece;                      // The piece that was moved (from start square)
+    int capturedPiece;                   // The piece captured (if any)
+    pair<int, int> capturedPieceSquare;  // For normal captures, equals (endRow, endCol);
+    // for en passant, it stores the actual square of the captured pawn.
+    bool enPassantCapture;               // True if the move was an en passant capture
+
+    // Save the castling rights.
+    bool whiteKingMoved;
+    bool whiteKingsideRookMoved;
+    bool whiteQueensideRookMoved;
+    bool blackKingMoved;
+    bool blackKingsideRookMoved;
+    bool blackQueensideRookMoved;
+
+    // Save the en passant square (to be restored on unmake).
+    pair<int, int> enPassantSquare;
+
+    // For castling moves: store the rook's move details.
+    bool castlingMove;   // true if the king moved two squares (castling)
+    int rookFromRow;
+    int rookFromCol;
+    int rookToRow;
+    int rookToCol;
+};
+
+
 class Position {
 private:
     int _board[8][8] = {
@@ -47,7 +76,8 @@ public:
 
     void changeTurn();
     int pieceColor(int row, int column) const;
-    void movePiece(Move move);
+    UndoInfo movePiece(Move move);
+    void undoMove(Move move, const UndoInfo& undo);
     
     void getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const;
     void getRookMoves(int row, int column, vector<Move>& moves) const;

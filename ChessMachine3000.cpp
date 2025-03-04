@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <stack>
 #include "chess.h"
 #include "move.h"
 #include "position.h"
@@ -12,78 +13,110 @@ using namespace std::chrono;
 int main() {
 	Position pos;
 
-	// BOT VS BOT
-	int moveCount = 0;
-	double maxDuration = 0.0;
 
-	while (moveCount < 150) {
-		auto start = steady_clock::now();
+	//// BOT VS BOT
+	//int moveCount = 0;
+	//double maxDuration = 0.0;
 
-		MinimaxValue value = pos.minimax(4);
-		pos.movePiece(value._move);
-		pos.printBoard();
-		cout << "Move played: " << value._move.toString()
-			<< " Total moves: " << moveCount << endl;
-		pos.changeTurn();
+	//while (moveCount < 150) {
+	//	auto start = steady_clock::now();
 
-		auto end = steady_clock::now();
-		duration<double> elapsed = end - start;
-		cout << "Time taken for this move: " << elapsed.count() << " seconds" << endl;
+	//	MinimaxValue value = pos.minimax(4);
+	//	pos.movePiece(value._move);
+	//	pos.printBoard();
+	//	cout << "Move played: " << value._move.toString()
+	//		<< " Total moves: " << moveCount << endl;
+	//	pos.changeTurn();
 
-		if (elapsed.count() > maxDuration) {
-			maxDuration = elapsed.count();
-		}
+	//	auto end = steady_clock::now();
+	//	duration<double> elapsed = end - start;
+	//	cout << "Time taken for this move: " << elapsed.count() << " seconds" << endl;
 
-		moveCount++;
-	}
+	//	if (elapsed.count() > maxDuration) {
+	//		maxDuration = elapsed.count();
+	//	}
 
-	cout << "Longest move duration: " << maxDuration << " seconds" << endl;
+	//	moveCount++;
+	//}
 
-	/*vector<Move> allMoves, legalMoves;
-	Move playerMove;
+	//cout << "Longest move duration: " << maxDuration << " seconds" << endl;
 
-	while (true) {
-		if (pos._moveturn == WHITE){
-			allMoves.clear();
-			legalMoves.clear();
 
-			pos.getAllMoves(pos._moveturn, allMoves);
-			pos.getLegalMoves(allMoves, legalMoves);
+	// PLAYER VS BOT
+    vector<Move> allMoves, legalMoves;
+    Move playerMove;
+    stack<UndoInfo> moveHistory;  // Stack to store move history
 
-			cout << "Current board:" << endl;
-			pos.printBoard();
+    while (true) {
+        if (pos._moveturn == WHITE) {
+            allMoves.clear();
+            legalMoves.clear();
 
-			for (const auto& move : legalMoves)
-				cout << move.toString() << " ";
-			cout << endl << "Total possible moves : " << legalMoves.size() << endl;
+            pos.getAllMoves(pos._moveturn, allMoves);
+            pos.getLegalMoves(allMoves, legalMoves);
 
-			cout << "Position score balance: " << pos.evaluate() << endl;
+            cout << "Current board:" << endl;
+            pos.printBoard();
 
-			cout << "Enter your move in UCI format: ";
-			string stringMove;
-			cin >> stringMove;
-			cout << "\n";
+            for (const auto& move : legalMoves)
+                cout << move.toString() << " ";
+            cout << endl << "Total possible moves: " << legalMoves.size() << endl;
 
-			playerMove = uciToMove(stringMove);
-			if (validMove(legalMoves, playerMove)) {
-				pos.movePiece(playerMove);
-				pos.changeTurn();
-			}
-			else {
-				cout << "Invalid move. Try again." << endl;
-			}
-		}
-		else {
-			MinimaxValue value = pos.minimax(4);
-			cout << "Minimaxvalue of the move made: " << value._value << endl;
-			pos.movePiece(value._move);
+            cout << "Position score balance: " << pos.evaluate() << endl;
 
-			Move botMove = value._move;
-			cout << "The bot did the move: " << botMove.toString() << endl;
+            cout << "Enter your move in UCI format (or type 'undo' to revert last moves): ";
+            string stringMove;
+            cin >> stringMove;
+            cout << "\n";
 
-			pos.changeTurn();
-		}
-	}*/
+            if (stringMove == "undo") {
+                // Ensure there are at least two moves to undo (bot + player)
+                if (moveHistory.size() >= 2) {
+                    UndoInfo botUndo = moveHistory.top(); moveHistory.pop();
+                    Move botMove = botUndo.move;
+                    pos.undoMove(botMove, botUndo);
+                    pos.changeTurn();  // Revert turn
+
+                    UndoInfo playerUndo = moveHistory.top(); moveHistory.pop();
+                    Move playerMove = playerUndo.move;
+                    pos.undoMove(playerMove, playerUndo);
+                    pos.changeTurn();  // Revert turn
+
+                    cout << "Undo successful. Reverted last two moves.\n";
+                }
+                else {
+                    cout << "No moves to undo.\n";
+                }
+                continue;
+            }
+
+            playerMove = uciToMove(stringMove);
+            if (validMove(legalMoves, playerMove)) {
+                UndoInfo undoData = pos.movePiece(playerMove);
+                moveHistory.push(undoData);  // Save the player's move
+                pos.changeTurn();
+            }
+            else {
+                cout << "Invalid move. Try again." << endl;
+            }
+        }
+        else {
+            auto start = steady_clock::now();
+            MinimaxValue value = pos.minimax(4);
+            cout << "Minimax value of the move made: " << value._value << endl;
+
+            UndoInfo undoData = pos.movePiece(value._move);
+            moveHistory.push(undoData);  // Save the bot's move
+
+            auto end = steady_clock::now();
+            duration<double> elapsed = end - start;
+
+            cout << "The bot did the move: " << value._move.toString()
+                << " in " << elapsed.count() << " seconds." << endl;
+
+            pos.changeTurn();
+        }
+    }
 
 	return 0;
 }
