@@ -1,14 +1,43 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
 #include "chess.h"
 #include "move.h"
 #include "position.h"
 
 using namespace std;
+using namespace std::chrono;
 
 int main() {
 	Position pos;
+
+	// BOT VS BOT
+	int moveCount = 0;
+	double maxDuration = 0.0;
+
+	while (moveCount < 150) {
+		auto start = steady_clock::now();
+
+		MinimaxValue value = pos.minimax(4);
+		pos.movePiece(value._move);
+		pos.printBoard();
+		cout << "Move played: " << value._move.toString()
+			<< " Total moves: " << moveCount << endl;
+		pos.changeTurn();
+
+		auto end = steady_clock::now();
+		duration<double> elapsed = end - start;
+		cout << "Time taken for this move: " << elapsed.count() << " seconds" << endl;
+
+		if (elapsed.count() > maxDuration) {
+			maxDuration = elapsed.count();
+		}
+
+		moveCount++;
+	}
+
+	cout << "Longest move duration: " << maxDuration << " seconds" << endl;
 
 	/*vector<Move> allMoves, legalMoves;
 	Move playerMove;
@@ -55,17 +84,6 @@ int main() {
 			pos.changeTurn();
 		}
 	}*/
-
-	// BOT VS BOT xd
-	int moveCount = 0;
-	while (moveCount < 300) {
-		MinimaxValue value = pos.minimax(3);
-		pos.movePiece(value._move);
-		pos.printBoard();
-		cout << "Move played: " << value._move.toString() << " Total moves: " << moveCount << endl;
-		pos.changeTurn();
-		moveCount++;
-	}
 
 	return 0;
 }

@@ -519,28 +519,40 @@ float Position::evaluate() const {
 
 // End-game scoring: White mate = +1e6, stalemate = 0, Black mate = -1e6.
 // Invoked when no legal moves remain (getLegalMoves returned an empty vector).
-float Position::endResultScore() const {
+float Position::endResultScore(int depth) const {
     int kingRow, kingCol;
     if (_moveturn == WHITE) {
         findKing(wK, kingRow, kingCol);
-        return isSquareUnderAttack(kingRow, kingCol, BLACK) ? -1000000.0f : 0.0f;
+        if (isSquareUnderAttack(kingRow, kingCol, BLACK)) {
+            return -1000000.0f - depth;
+        }
+        else {
+            return 0.0f;
+        }
     }
     else {
         findKing(bK, kingRow, kingCol);
-        return isSquareUnderAttack(kingRow, kingCol, WHITE) ? 1000000.0f : 0.0f;
+        if (isSquareUnderAttack(kingRow, kingCol, WHITE)) {
+            return 1000000.0f + depth;
+        }
+        else {
+            return 0.0f;
+        }
     }
 }
 
 MinimaxValue Position::minimax(int depth, float alpha, float beta) {
     // Generate legal moves for the current side
     vector<Move> allMoves;
+    allMoves.reserve(100);
     getAllMoves(_moveturn, allMoves);
     vector<Move> legalMoves;
+    legalMoves.reserve(100);
     getLegalMoves(allMoves, legalMoves);
 
     // No moves or depth limit reached
     if (legalMoves.empty())
-        return { endResultScore(), Move() };
+        return { endResultScore(depth), Move() };
     if (depth == 0)
         return { evaluate(), Move() };
 
