@@ -623,14 +623,10 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
         bestValue = numeric_limits<float>::lowest();
         // Maximizing player.
         for (const auto& move : legalMoves) {
-            // Make the move in-place and record the undo state.
             UndoInfo undo = movePiece(move);
-            // Switch turn so that minimax is called for the opponent.
             changeTurn();
             MinimaxValue childVal = minimax(depth - 1, alpha, beta);
-            // Revert the turn back.
             changeTurn();
-            // Unmake the move to restore the board state.
             undoMove(move, undo);
 
             if (childVal._value > bestValue) {
