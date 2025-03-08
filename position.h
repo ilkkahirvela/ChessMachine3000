@@ -17,29 +17,21 @@ public:
 
 // The UndoInfo struct stores state before a move is applied.
 struct UndoInfo {
-    int movedPiece;                      // The piece that was moved (from start square)
-    int capturedPiece;                   // The piece captured (if any)
-    pair<int, int> capturedPieceSquare;  // For normal captures, equals (endRow, endCol);
-    // for en passant, it stores the actual square of the captured pawn.
-    bool enPassantCapture;               // True if the move was an en passant capture
+    Move move;
+    int movedPiece;
+    int capturedPiece;
+    pair<int, int> capturedPieceSquare; 
+    bool enPassantCapture;
 
-    // Save the castling rights.
-    bool whiteKingMoved;
-    bool whiteKingsideRookMoved;
-    bool whiteQueensideRookMoved;
-    bool blackKingMoved;
-    bool blackKingsideRookMoved;
-    bool blackQueensideRookMoved;
+    // Castling rights
+    bool whiteKingMoved, whiteKingsideRookMoved, whiteQueensideRookMoved;
+    bool blackKingMoved, blackKingsideRookMoved, blackQueensideRookMoved;
 
-    // Save the en passant square (to be restored on unmake).
     pair<int, int> enPassantSquare;
 
-    // For castling moves: store the rook's move details.
-    bool castlingMove;   // true if the king moved two squares (castling)
-    int rookFromRow;
-    int rookFromCol;
-    int rookToRow;
-    int rookToCol;
+    // Castling move details
+    bool castlingMove;
+    int rookFromRow, rookFromCol, rookToRow, rookToCol;
 };
 
 
@@ -62,12 +54,8 @@ private:
     static const vector<pair<int, int>> _queenDirections;
     static const vector<pair<int, int>> _kingMoves;
 
-    bool _whiteKingMoved = false;
-    bool _whiteKingsideRookMoved = false;
-    bool _whiteQueensideRookMoved = false;
-    bool _blackKingMoved = false;
-    bool _blackKingsideRookMoved = false;
-    bool _blackQueensideRookMoved = false;
+    bool _whiteKingMoved = false, _whiteKingsideRookMoved = false, _whiteQueensideRookMoved = false;
+    bool _blackKingMoved = false, _blackKingsideRookMoved = false, _blackQueensideRookMoved = false;
 
     pair<int, int> _enPassantSquare = { -1, -1 };
 

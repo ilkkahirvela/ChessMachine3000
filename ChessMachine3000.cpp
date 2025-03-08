@@ -70,7 +70,7 @@ int main() {
             cout << "\n";
 
             if (stringMove == "undo") {
-                // Ensure there are at least two moves to undo (bot + player)
+                // Ensure there are at least two moves to undo
                 if (moveHistory.size() >= 2) {
                     UndoInfo botUndo = moveHistory.top(); moveHistory.pop();
                     Move botMove = botUndo.move;
@@ -80,7 +80,7 @@ int main() {
                     UndoInfo playerUndo = moveHistory.top(); moveHistory.pop();
                     Move playerMove = playerUndo.move;
                     pos.undoMove(playerMove, playerUndo);
-                    pos.changeTurn();  // Revert turn
+                    pos.changeTurn();
 
                     cout << "Undo successful. Reverted last two moves.\n";
                 }

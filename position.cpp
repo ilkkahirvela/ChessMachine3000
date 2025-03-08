@@ -54,14 +54,15 @@ int Position::pieceColor(int row, int column) const {
 
 UndoInfo Position::movePiece(Move move) {
     UndoInfo undo;
-    // Save moved piece.
+    undo.move = move;
+    // Save moved piece
     undo.movedPiece = _board[move.startRow][move.startCol];
-    // Save captured piece (if any).
+    // Save captured piece
     undo.capturedPiece = _board[move.endRow][move.endCol];
     undo.capturedPieceSquare = { move.endRow, move.endCol };
     undo.enPassantCapture = false;
 
-    // Save castling rights and en passant square.
+    // Save castling rights and en passant square
     undo.whiteKingMoved = _whiteKingMoved;
     undo.whiteKingsideRookMoved = _whiteKingsideRookMoved;
     undo.whiteQueensideRookMoved = _whiteQueensideRookMoved;
@@ -70,14 +71,14 @@ UndoInfo Position::movePiece(Move move) {
     undo.blackQueensideRookMoved = _blackQueensideRookMoved;
     undo.enPassantSquare = _enPassantSquare;
 
-    undo.castlingMove = false; // Not a castling move by default.
+    undo.castlingMove = false;
 
     int piece = undo.movedPiece;
 
-    // Clear en passant.
+    // Clear en passant
     _enPassantSquare = { -1, -1 };
 
-    // Handle en passant capture.
+    // Handle en passant capture
     bool isEnPassant = (piece == wP || piece == bP) &&
         (abs(move.startCol - move.endCol) == 1) &&
         (_board[move.endRow][move.endCol] == NA);
@@ -95,10 +96,10 @@ UndoInfo Position::movePiece(Move move) {
         }
     }
 
-    // Remove piece from the start.
+    // Remove piece from the start
     _board[move.startRow][move.startCol] = NA;
 
-    // Update castling flags.
+    // Update castling flags
     if (piece == wK)
         _whiteKingMoved = true;
     else if (piece == bK)
@@ -116,7 +117,7 @@ UndoInfo Position::movePiece(Move move) {
             _blackKingsideRookMoved = true;
     }
 
-    // Handle pawn promotion.
+    // Handle pawn promotion
     if ((piece == wP && move.endRow == 0) || (piece == bP && move.endRow == 7)) {
         if (move.promotion == NA)
             move.promotion = (piece == wP) ? wQ : bQ;
@@ -126,10 +127,10 @@ UndoInfo Position::movePiece(Move move) {
         _board[move.endRow][move.endCol] = piece;
     }
 
-    // Handle castling move.
+    // Handle castling move
     if ((piece == wK || piece == bK) && abs(move.startCol - move.endCol) == 2) {
         undo.castlingMove = true;
-        if (move.endCol == 6) { // Kingside.
+        if (move.endCol == 6) { // Kingside
             undo.rookFromRow = move.startRow;
             undo.rookFromCol = 7;
             undo.rookToRow = move.startRow;
@@ -137,7 +138,7 @@ UndoInfo Position::movePiece(Move move) {
             _board[move.startRow][7] = NA;
             _board[move.startRow][5] = (piece == wK) ? wR : bR;
         }
-        else if (move.endCol == 2) { // Queenside.
+        else if (move.endCol == 2) { // Queenside
             undo.rookFromRow = move.startRow;
             undo.rookFromCol = 0;
             undo.rookToRow = move.startRow;
@@ -153,11 +154,11 @@ UndoInfo Position::movePiece(Move move) {
 void Position::undoMove(Move move, const UndoInfo& undo) {
     int piece = undo.movedPiece;
 
-    // Remove moved piece from destination and restore it to the start.
+    // Remove moved piece from destination and restore it to the start
     _board[move.endRow][move.endCol] = NA;
     _board[move.startRow][move.startCol] = piece;
 
-    // Restore captured piece, if any.
+    // Restore captured piece
     if (undo.capturedPiece != NA) {
         _board[undo.capturedPieceSquare.first][undo.capturedPieceSquare.second] = undo.capturedPiece;
     }
@@ -177,7 +178,6 @@ void Position::undoMove(Move move, const UndoInfo& undo) {
     _blackQueensideRookMoved = undo.blackQueensideRookMoved;
     _enPassantSquare = undo.enPassantSquare;
 }
-
 
 void Position::getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const {
     for (const auto& dir : directions) {
