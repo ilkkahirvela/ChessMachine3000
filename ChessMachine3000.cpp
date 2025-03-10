@@ -45,7 +45,7 @@ int main() {
 	// PLAYER VS BOT
     vector<Move> allMoves, legalMoves;
     Move playerMove;
-    stack<UndoInfo> moveHistory;  // Stack to store move history
+    stack<UndoInfo> moveHistory;
 
     while (true) {
         if (pos._moveturn == WHITE) {
@@ -70,12 +70,11 @@ int main() {
             cout << "\n";
 
             if (stringMove == "undo") {
-                // Ensure there are at least two moves to undo
                 if (moveHistory.size() >= 2) {
                     UndoInfo botUndo = moveHistory.top(); moveHistory.pop();
                     Move botMove = botUndo.move;
                     pos.undoMove(botMove, botUndo);
-                    pos.changeTurn();  // Revert turn
+                    pos.changeTurn();
 
                     UndoInfo playerUndo = moveHistory.top(); moveHistory.pop();
                     Move playerMove = playerUndo.move;
@@ -93,7 +92,7 @@ int main() {
             playerMove = uciToMove(stringMove);
             if (validMove(legalMoves, playerMove)) {
                 UndoInfo undoData = pos.movePiece(playerMove);
-                moveHistory.push(undoData);  // Save the player's move
+                moveHistory.push(undoData);
                 pos.changeTurn();
             }
             else {
@@ -106,7 +105,7 @@ int main() {
             cout << "Minimax value of the move made: " << value._value << endl;
 
             UndoInfo undoData = pos.movePiece(value._move);
-            moveHistory.push(undoData);  // Save the bot's move
+            moveHistory.push(undoData);
 
             auto end = steady_clock::now();
             duration<double> elapsed = end - start;

@@ -534,40 +534,40 @@ float Position::evaluate() const {
         for (int c = 0; c < 8; ++c) {
             switch (_board[r][c]) {
             case wP:
-                score += 1.0f + pawnTable[r][c];
+                score += (10.0f + pawnTable[r][c]);
                 break;
             case wN:
-                score += 3.0f + knightTable[r][c];
+                score += (30.0f + knightTable[r][c]);
                 break;
             case wB:
-                score += 3.0f + bishopTable[r][c];
+                score += (30.0f + bishopTable[r][c]);
                 break;
             case wR:
-                score += 5.0f + rookTable[r][c];
+                score += (50.0f + rookTable[r][c]);
                 break;
             case wQ:
-                score += 9.0f + queenTable[r][c];
+                score += (90.0f + queenTable[r][c]);
                 break;
             case wK:
-                score += kingTable[r][c];
+                score += (kingTable[r][c]);
                 break;
             case bP:
-                score -= 1.0f + pawnTable[7 - r][c];
+                score -= (10.0f + pawnTable[7 - r][c]);
                 break;
             case bN:
-                score -= 3.0f + knightTable[7 - r][c];
+                score -= (30.0f + knightTable[7 - r][c]);
                 break;
             case bB:
-                score -= 3.0f + bishopTable[7 - r][c];
+                score -= (30.0f + bishopTable[7 - r][c]);
                 break;
             case bR:
-                score -= 5.0f + rookTable[7 - r][c];
+                score -= (50.0f + rookTable[7 - r][c]);
                 break;
             case bQ:
-                score -= 9.0f + queenTable[7 - r][c];
+                score -= (90.0f + queenTable[7 - r][c]);
                 break;
             case bK:
-                score -= kingTable[7 - r][c];
+                score -= (kingTable[7 - r][c]);
                 break;
             default: // empty square
                 break;
