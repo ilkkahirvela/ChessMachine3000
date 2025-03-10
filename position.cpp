@@ -5,8 +5,11 @@
 #include <vector>
 #include <cmath>
 #include <limits>
+#include <chrono>
+#include <exception>
 
 using namespace std;
+using namespace std::chrono;
 
 const vector<pair<int, int>> Position::_knightOffsets = {
     {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
@@ -601,8 +604,24 @@ float Position::endResultScore(int depth) const {
     }
 }
 
-MinimaxValue Position::minimax(int depth, float alpha, float beta) {
-    // Generate legal moves for the current side.
+class TimeLimitExceeded : public exception {
+public:
+    const char* what() const noexcept override {
+        return "Time limit exceeded";
+    }
+};
+
+// Minimax with time limit
+MinimaxValue Position::minimax(int depth, float alpha, float beta,
+    const chrono::steady_clock::time_point& startTime, int timeLimitMs) {
+
+    auto currentTime = chrono::steady_clock::now();
+    int elapsedMs = chrono::duration_cast<chrono::milliseconds>(currentTime - startTime).count();
+    if (elapsedMs >= timeLimitMs) {
+        throw TimeLimitExceeded();
+    }
+
+    // Generate moves.
     vector<Move> allMoves;
     allMoves.reserve(100);
     getAllMoves(_moveturn, allMoves);
@@ -621,11 +640,20 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
 
     if (_moveturn == WHITE) {
         bestValue = numeric_limits<float>::lowest();
-        // Maximizing player.
+        // Maximizing player
         for (const auto& move : legalMoves) {
             UndoInfo undo = movePiece(move);
             changeTurn();
-            MinimaxValue childVal = minimax(depth - 1, alpha, beta);
+
+            MinimaxValue childVal;
+            try {
+                childVal = minimax(depth - 1, alpha, beta, startTime, timeLimitMs);
+            }
+            catch (TimeLimitExceeded&) { // restore the board when time runs out
+                changeTurn();
+                undoMove(move, undo);
+                throw;
+            }
             changeTurn();
             undoMove(move, undo);
 
@@ -635,16 +663,25 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
             }
             alpha = max(alpha, bestValue);
             if (beta <= alpha)
-                break;  // Beta cutoff.
+                break;  // Beta cutoff
         }
     }
     else {
         bestValue = numeric_limits<float>::max();
-        // Minimizing player.
+        // Minimizing player
         for (const auto& move : legalMoves) {
             UndoInfo undo = movePiece(move);
             changeTurn();
-            MinimaxValue childVal = minimax(depth - 1, alpha, beta);
+
+            MinimaxValue childVal;
+            try {
+                childVal = minimax(depth - 1, alpha, beta, startTime, timeLimitMs);
+            }
+            catch (TimeLimitExceeded&) {
+                changeTurn();
+                undoMove(move, undo);
+                throw;
+            }
             changeTurn();
             undoMove(move, undo);
 
@@ -654,17 +691,40 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta) {
             }
             beta = min(beta, bestValue);
             if (beta <= alpha)
-                break;  // Alpha cutoff.
+                break;  // Alpha cutoff
         }
     }
 
     return { bestValue, bestMove };
 }
 
-// Calls the alpha-beta version with initial values.
-MinimaxValue Position::minimax(int depth) {
-    return minimax(depth, numeric_limits<float>::lowest(), numeric_limits<float>::max());
+// Iterative deepening for minimax
+MinimaxValue Position::iterativeDeepening(int maxDepth, int timeLimitMs) {
+    using clock = chrono::steady_clock;
+    auto startTime = clock::now();
+    MinimaxValue bestResult = { 0.0f, Move() };
+
+    // Try increasing depths from 1 to maxDepth
+    for (int depth = 1; depth <= maxDepth; depth++) {
+        try {
+            MinimaxValue result = minimax(depth, numeric_limits<float>::lowest(),
+                numeric_limits<float>::max(), startTime, timeLimitMs);
+            bestResult = result;
+
+            auto currentTime = clock::now();
+            int elapsedMs = chrono::duration_cast<chrono::milliseconds>(currentTime - startTime).count();
+            cout << "Depth: " << depth
+                << " | Best Value: " << result._value
+                << " | Elapsed: " << elapsedMs << "ms" << endl;
+        }
+        catch (TimeLimitExceeded& e) {
+            cout << "Time limit exceeded during search at depth " << depth << endl;
+            break;
+        }
+    }
+    return bestResult;
 }
+
 
 // --- BOARD VISUALISATION ---
 void Position::emptyBoard() {

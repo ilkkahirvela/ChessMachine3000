@@ -2,14 +2,21 @@
 #include <vector>
 #include "move.h"
 #include "chess.h"
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <cmath>
+#include <limits>
+#include <chrono>
+#include <exception>
 
 using namespace std;
+using namespace std::chrono;
 
 class MinimaxValue {
 public:
-    MinimaxValue(float value, Move move) :
-        _value(value), _move(move)
-    {}
+    MinimaxValue() : _value(0.0f), _move(Move()) {}
+    MinimaxValue(float value, Move move) : _value(value), _move(move) {}
     float _value;
     Move _move;
 };
@@ -84,8 +91,8 @@ public:
     // Evaluates the score of a chess position
     float evaluate() const;
     float endResultScore(int depth) const;
-    MinimaxValue minimax(int depth, float alpha, float beta);
-    MinimaxValue minimax(int depth);
+    MinimaxValue minimax(int depth, float alpha, float beta, const std::chrono::steady_clock::time_point& startTime, int timeLimitMs);
+    MinimaxValue iterativeDeepening(int maxDepth, int timeLimitMs);
 
     void emptyBoard();
     void insertTestPiece(int r, int c, int piece);

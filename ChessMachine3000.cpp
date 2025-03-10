@@ -101,16 +101,16 @@ int main() {
         }
         else {
             auto start = steady_clock::now();
-            MinimaxValue value = pos.minimax(4);
-            cout << "Minimax value of the move made: " << value._value << endl;
+            MinimaxValue minimax = pos.iterativeDeepening(8, 3500);
+            cout << "Minimax value of the move made: " << minimax._value << endl;
 
-            UndoInfo undoData = pos.movePiece(value._move);
+            UndoInfo undoData = pos.movePiece(minimax._move);
             moveHistory.push(undoData);
 
             auto end = steady_clock::now();
             duration<double> elapsed = end - start;
 
-            cout << "The bot did the move: " << value._move.toString()
+            cout << "The bot did the move: " << minimax._move.toString()
                 << " in " << elapsed.count() << " seconds." << endl;
 
             pos.changeTurn();
