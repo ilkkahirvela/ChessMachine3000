@@ -212,7 +212,7 @@ public:
      * @param allMoves A vector containing all generated moves.
      * @param legalMoves A vector to which the legal moves are added.
      */
-    void getLegalMoves(vector<Move> allMoves, vector<Move>& legalMoves) const;
+    void getLegalMoves(const vector<Move>& allMoves, vector<Move>& legalMoves);
 
     /**
      * @brief Checks if a given square is under attack by the opponent.

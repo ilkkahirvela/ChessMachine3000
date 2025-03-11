@@ -376,33 +376,44 @@ void Position::getAllMoves(int player, vector<Move>& moves) const {
     }
 }
 
-void Position::getLegalMoves(vector<Move> allMoves, vector<Move>& legalMoves) const {
+void Position::getLegalMoves(const vector<Move>& allMoves, vector<Move>& legalMoves) {
     int kingRow, kingCol;
-    int player = _moveturn; // Store the moving player's color
+    int player = _moveturn; // The moving player's color
     int opponent = (player == WHITE ? BLACK : WHITE);
 
-    for (Move& move : allMoves) {
-        Position posCopy = *this;
+    for (const Move& move : allMoves) {
+        UndoInfo undo = movePiece(move);
 
-        posCopy.movePiece(move);
-        posCopy.findKing(player == WHITE ? wK : bK, kingRow, kingCol);
-        if (!posCopy.isSquareUnderAttack(kingRow, kingCol, opponent)) {
-            legalMoves.push_back(move); // The move is legal
+        findKing((player == WHITE ? wK : bK), kingRow, kingCol);
+
+        if (!isSquareUnderAttack(kingRow, kingCol, opponent)) {
+            legalMoves.push_back(move);
         }
+
+        // Undo the move to restore the original board state.
+        undoMove(move, undo);
     }
 }
 
 bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
+    // Precompute opponent-specific piece codes
+    int pawn = (opponent == WHITE ? wP : bP);
+    int knight = (opponent == WHITE ? wN : bN);
+    int king = (opponent == WHITE ? wK : bK);
+    int rook = (opponent == WHITE ? wR : bR);
+    int bishop = (opponent == WHITE ? wB : bB);
+    int queen = (opponent == WHITE ? wQ : bQ);
+
     // Pawn attacks
     if (opponent == WHITE) {
-        if ((row - 1 >= 0 && col - 1 >= 0 && _board[row - 1][col - 1] == wP) ||
-            (row - 1 >= 0 && col + 1 < 8 && _board[row - 1][col + 1] == wP)) {
+        if ((row - 1 >= 0 && col - 1 >= 0 && _board[row - 1][col - 1] == pawn) ||
+            (row - 1 >= 0 && col + 1 < 8 && _board[row - 1][col + 1] == pawn)) {
             return true;
         }
     }
     else {
-        if ((row + 1 < 8 && col - 1 >= 0 && _board[row + 1][col - 1] == bP) ||
-            (row + 1 < 8 && col + 1 < 8 && _board[row + 1][col + 1] == bP)) {
+        if ((row + 1 < 8 && col - 1 >= 0 && _board[row + 1][col - 1] == pawn) ||
+            (row + 1 < 8 && col + 1 < 8 && _board[row + 1][col + 1] == pawn)) {
             return true;
         }
     }
@@ -410,36 +421,41 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
     // Knight attacks
     for (const auto& offset : _knightOffsets) {
         int r = row + offset.first, c = col + offset.second;
-        if (r >= 0 && r < 8 && c >= 0 && c < 8 && _board[r][c] == (opponent == WHITE ? wN : bN)) {
+        if (r >= 0 && r < 8 && c >= 0 && c < 8 && _board[r][c] == knight)
             return true;
-        }
     }
 
     // King attacks
     for (const auto& move : _kingMoves) {
         int r = row + move.first, c = col + move.second;
-        if (r >= 0 && r < 8 && c >= 0 && c < 8 && _board[r][c] == (opponent == WHITE ? wK : bK)) {
+        if (r >= 0 && r < 8 && c >= 0 && c < 8 && _board[r][c] == king)
             return true;
-        }
     }
 
-    // Rook, Bishop, Queen
-    for (const auto& dir : _queenDirections) {
+    // Check rook and queen attacks (vertical & horizontal)
+    for (const auto& dir : _rookDirections) {
         int r = row + dir.first, c = col + dir.second;
         while (r >= 0 && r < 8 && c >= 0 && c < 8) {
             int piece = _board[r][c];
             if (piece != NA) {
-                if ((dir == _rookDirections[0] || dir == _rookDirections[1] ||
-                    dir == _rookDirections[2] || dir == _rookDirections[3]) &&
-                    (piece == (opponent == WHITE ? wR : bR) || piece == (opponent == WHITE ? wQ : bQ))) {
+                if (piece == rook || piece == queen)
                     return true;
-                }
-                if ((dir == _bishopDirections[0] || dir == _bishopDirections[1] ||
-                    dir == _bishopDirections[2] || dir == _bishopDirections[3]) &&
-                    (piece == (opponent == WHITE ? wB : bB) || piece == (opponent == WHITE ? wQ : bQ))) {
+                break; // Blocked path by another piece
+            }
+            r += dir.first;
+            c += dir.second;
+        }
+    }
+
+    // Check bishop and queen attacks (diagonals)
+    for (const auto& dir : _bishopDirections) {
+        int r = row + dir.first, c = col + dir.second;
+        while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int piece = _board[r][c];
+            if (piece != NA) {
+                if (piece == bishop || piece == queen)
                     return true;
-                }
-                break; // Blocked path
+                break; // Blocked path by another piece
             }
             r += dir.first;
             c += dir.second;
