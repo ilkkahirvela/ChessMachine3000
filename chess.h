@@ -5,21 +5,73 @@
 
 using namespace std;
 
-// Players
-enum { WHITE, BLACK };
+/**
+ * @brief Player identifiers.
+ *
+ * Enum representing the two players in a chess game.
+ */
+enum Player { WHITE, BLACK };
 
-// Vakioarvot eri nappululoille (NA = tyhjä ruutu).
-enum Pieces { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
+/**
+ * @brief Chess piece constants.
+ *
+ * Enum values for different chess pieces. NA represents an empty square.
+ * White pieces are typically represented by uppercase symbols and black pieces by lowercase.
+ */
+enum Piece { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
 
+/**
+ * @brief Promotion pieces for white.
+ *
+ * A vector of piece constants that a white pawn can be promoted to.
+ */
 static const vector<int> whitePromotions{ wR, wN, wB, wQ };
+
+/**
+ * @brief Promotion pieces for black.
+ *
+ * A vector of piece constants that a black pawn can be promoted to.
+ */
 static const vector<int> blackPromotions{ bR, bN, bB, bQ };
 
-// Palauttaa annetun nappulan tulostettavan muodon (valkoiset isolla, mustat pienellä, 12 = " ")
+/**
+ * @brief Returns the printable representation of a chess piece.
+ *
+ * Converts the given piece constant to a string. White pieces are represented in uppercase,
+ * black pieces in lowercase, and NA is represented as a space (" ").
+ *
+ * @param piece The chess piece constant.
+ * @return A string representing the piece.
+ */
 string pieceIndicator(int piece);
 
+/**
+ * @brief Converts a UCI-formatted move string to a Move object.
+ *
+ * Parses a move provided in UCI notation (e.g., "e2e4") and returns a corresponding Move object.
+ *
+ * @param moveStr The move string in UCI format.
+ * @return A Move object corresponding to the move string.
+ */
 Move uciToMove(const string& moveStr);
 
+/**
+ * @brief Validates if a move is legal.
+ *
+ * Checks whether the provided move is present in the list of all generated legal moves.
+ *
+ * @param allMoves A vector containing all legal moves.
+ * @param playerMove The move to validate.
+ * @return True if the move is valid, false otherwise.
+ */
 bool validMove(const vector<Move>& allMoves, Move playerMove);
 
-// Returns the color of the opponent
+/**
+ * @brief Returns the opponent's color.
+ *
+ * Given the current player's color, this function returns the color of the opponent.
+ *
+ * @param player The current player's color (WHITE or BLACK).
+ * @return The opponent's color.
+ */
 int opponent(int player);
