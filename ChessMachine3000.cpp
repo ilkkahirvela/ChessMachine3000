@@ -3,6 +3,7 @@
 #include <string>
 #include <chrono>
 #include <stack>
+#include <algorithm>
 #include "chess.h"
 #include "move.h"
 #include "position.h"
@@ -11,44 +12,32 @@ using namespace std;
 using namespace std::chrono;
 
 int main() {
-	Position pos;
+    Position pos;
+    string playerInput;
+    int playerSide, botSide;
 
+    cout << "Choose your color (white/0 or black/1): ";
+    cin >> playerInput;
 
-	//// BOT VS BOT
-	//int moveCount = 0;
-	//double maxDuration = 0.0;
+    transform(playerInput.begin(), playerInput.end(), playerInput.begin(), ::tolower);
 
-	//while (moveCount < 150) {
-	//	auto start = steady_clock::now();
+    if (playerInput == "white" || playerInput == "0") {
+        playerSide = WHITE;
+    }
+    else if (playerInput == "black" || playerInput == "1") {
+        playerSide = BLACK;
+    }
+    else {
+        cout << "Invalid input. Defaulting to white." << endl;
+        playerSide = WHITE;
+    }
 
-	//	MinimaxValue value = pos.minimax(4);
-	//	pos.movePiece(value._move);
-	//	pos.printBoard();
-	//	cout << "Move played: " << value._move.toString()
-	//		<< " Total moves: " << moveCount << endl;
-	//	pos.changeTurn();
-
-	//	auto end = steady_clock::now();
-	//	duration<double> elapsed = end - start;
-	//	cout << "Time taken for this move: " << elapsed.count() << " seconds" << endl;
-
-	//	if (elapsed.count() > maxDuration) {
-	//		maxDuration = elapsed.count();
-	//	}
-
-	//	moveCount++;
-	//}
-
-	//cout << "Longest move duration: " << maxDuration << " seconds" << endl;
-
-
-	// PLAYER VS BOT
     vector<Move> allMoves, legalMoves;
     Move playerMove;
     stack<UndoInfo> moveHistory;
 
     while (true) {
-        if (pos._moveturn == WHITE) {
+        if (pos._moveturn == playerSide) {
             allMoves.clear();
             legalMoves.clear();
 
@@ -101,7 +90,7 @@ int main() {
         }
         else {
             auto start = steady_clock::now();
-            MinimaxValue minimax = pos.iterativeDeepening(8, 3500);
+            MinimaxValue minimax = pos.iterativeDeepening(8, 3000);
             cout << "Minimax value of the move made: " << minimax._value << endl;
 
             UndoInfo undoData = pos.movePiece(minimax._move);
@@ -117,5 +106,5 @@ int main() {
         }
     }
 
-	return 0;
+    return 0;
 }
