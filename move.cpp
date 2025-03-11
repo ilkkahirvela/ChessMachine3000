@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include "Move.h"
+#include "move.h"
 #include "chess.h"
 
 using namespace std;

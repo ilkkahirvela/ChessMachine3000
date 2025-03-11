@@ -10,7 +10,7 @@ using namespace std;
  *
  * Enum representing the two players in a chess game.
  */
-enum Player { WHITE, BLACK };
+enum Player : int { WHITE, BLACK };
 
 /**
  * @brief Chess piece constants.
@@ -18,7 +18,7 @@ enum Player { WHITE, BLACK };
  * Enum values for different chess pieces. NA represents an empty square.
  * White pieces are typically represented by uppercase symbols and black pieces by lowercase.
  */
-enum Piece { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
+enum Piece : int { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
 
 /**
  * @brief Promotion pieces for white.

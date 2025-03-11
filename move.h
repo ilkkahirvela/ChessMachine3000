@@ -1,6 +1,4 @@
-#ifndef MOVE_H
-#define MOVE_H
-
+#pragma once
 #include <string>
 
 using namespace std;
@@ -54,5 +52,3 @@ public:
      */
     string toString() const;
 };
-
-#endif
