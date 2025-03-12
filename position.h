@@ -255,6 +255,9 @@ public:
      */
     MinimaxValue minimax(int depth, float alpha, float beta, const std::chrono::steady_clock::time_point& startTime, int timeLimitMs);
 
+    // New parallel version to be used at the root level :
+    MinimaxValue parallelMinimax(int depth, const std::chrono::steady_clock::time_point & startTime, int timeLimitMs);
+
     /**
      * @brief Performs iterative deepening using minimax search.
      * @param maxDepth The maximum search depth.

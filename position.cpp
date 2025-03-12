@@ -1,5 +1,3 @@
-#include "position.h"
-#include "chess.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -7,6 +5,10 @@
 #include <limits>
 #include <chrono>
 #include <exception>
+#include <stdexcept>
+#include <future>
+#include "position.h"
+#include "chess.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -714,33 +716,110 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta,
     return { bestValue, bestMove };
 }
 
-// Iterative deepening for minimax
+MinimaxValue Position::parallelMinimax(int depth, const steady_clock::time_point& startTime, int timeLimitMs) {
+    // Generate all possible moves for the current position.
+    std::vector<Move> allMoves;
+    allMoves.reserve(100);
+    getAllMoves(_moveturn, allMoves);
+
+    std::vector<Move> legalMoves;
+    legalMoves.reserve(100);
+    getLegalMoves(allMoves, legalMoves);
+
+    // Terminal conditions.
+    if (legalMoves.empty())
+        return { endResultScore(depth), Move() };
+    if (depth == 0)
+        return { evaluate(), Move() };
+
+    // Prepare for parallel processing.
+    std::vector<std::future<MinimaxValue>> futures;
+    futures.reserve(legalMoves.size());
+
+    // Spawn async tasks for each legal move.
+    for (const auto& move : legalMoves) {
+        futures.push_back(std::async(std::launch::async, [this, move, depth, startTime, timeLimitMs]() -> MinimaxValue {
+            Position posCopy(*this);
+            UndoInfo undo = posCopy.movePiece(move);
+            posCopy.changeTurn();
+
+            try {
+                // Use full alpha-beta window for child search.
+                return posCopy.minimax(depth - 1,
+                    numeric_limits<float>::lowest(),
+                    numeric_limits<float>::max(),
+                    startTime, timeLimitMs);
+            }
+            catch (TimeLimitExceeded&) {
+                throw;
+            }
+            }));
+    }
+
+    // Combine results.
+    Move bestMove;
+    float bestValue;
+    if (_moveturn == WHITE) {
+        bestValue = numeric_limits<float>::lowest();
+        for (size_t i = 0; i < futures.size(); ++i) {
+            MinimaxValue mv;
+            try {
+                mv = futures[i].get();
+            }
+            catch (TimeLimitExceeded&) {
+                throw;
+            }
+            if (mv._value > bestValue) {
+                bestValue = mv._value;
+                bestMove = legalMoves[i];
+            }
+        }
+    }
+    else { // BLACK is minimizing.
+        bestValue = numeric_limits<float>::max();
+        for (size_t i = 0; i < futures.size(); ++i) {
+            MinimaxValue mv;
+            try {
+                mv = futures[i].get();
+            }
+            catch (TimeLimitExceeded&) {
+                throw;
+            }
+            if (mv._value < bestValue) {
+                bestValue = mv._value;
+                bestMove = legalMoves[i];
+            }
+        }
+    }
+
+    return { bestValue, bestMove };
+}
+
+// Iterative deepening with parallel search at the root.
 MinimaxValue Position::iterativeDeepening(int maxDepth, int timeLimitMs) {
-    using clock = chrono::steady_clock;
+    using clock = steady_clock;
     auto startTime = clock::now();
     MinimaxValue bestResult = { 0.0f, Move() };
 
     // Try increasing depths from 1 to maxDepth
     for (int depth = 1; depth <= maxDepth; depth++) {
         try {
-            MinimaxValue result = minimax(depth, numeric_limits<float>::lowest(),
-                numeric_limits<float>::max(), startTime, timeLimitMs);
+            MinimaxValue result = parallelMinimax(depth, startTime, timeLimitMs);
             bestResult = result;
 
             auto currentTime = clock::now();
-            int elapsedMs = chrono::duration_cast<chrono::milliseconds>(currentTime - startTime).count();
-            cout << "Depth: " << depth
+            int elapsedMs = duration_cast<milliseconds>(currentTime - startTime).count();
+            std::cout << "Depth: " << depth
                 << " | Best Value: " << result._value
-                << " | Elapsed: " << elapsedMs << "ms" << endl;
+                << " | Elapsed: " << elapsedMs << "ms" << std::endl;
         }
         catch (TimeLimitExceeded& e) {
-            cout << "Time limit exceeded during search at depth " << depth << endl;
+            std::cout << "Time limit exceeded at depth " << depth << std::endl;
             break;
         }
     }
     return bestResult;
 }
-
 
 // --- BOARD VISUALISATION ---
 void Position::emptyBoard() {
