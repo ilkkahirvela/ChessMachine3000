@@ -408,16 +408,14 @@ bool Position::isSquareUnderAttack(int row, int col, int opponent) const {
 
     // Pawn attacks
     if (opponent == WHITE) {
-        if ((row - 1 >= 0 && col - 1 >= 0 && _board[row - 1][col - 1] == pawn) ||
-            (row - 1 >= 0 && col + 1 < 8 && _board[row - 1][col + 1] == pawn)) {
+        if ((row + 1 < 8 && col - 1 >= 0 && _board[row + 1][col - 1] == pawn) ||
+            (row + 1 < 8 && col + 1 < 8 && _board[row + 1][col + 1] == pawn))
             return true;
-        }
     }
     else {
-        if ((row + 1 < 8 && col - 1 >= 0 && _board[row + 1][col - 1] == pawn) ||
-            (row + 1 < 8 && col + 1 < 8 && _board[row + 1][col + 1] == pawn)) {
+        if ((row - 1 >= 0 && col - 1 >= 0 && _board[row - 1][col - 1] == pawn) ||
+            (row - 1 >= 0 && col + 1 < 8 && _board[row - 1][col + 1] == pawn))
             return true;
-        }
     }
 
     // Knight attacks

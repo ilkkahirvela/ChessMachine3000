@@ -252,6 +252,7 @@ public:
      */
     float endResultScore(int depth) const;
 
+    // scores moves for move ordering
     int scoreMove(const Move& move) const;
 
     void orderMoves(vector<Move>& moves) const;

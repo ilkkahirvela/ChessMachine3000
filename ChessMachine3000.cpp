@@ -27,8 +27,8 @@ using namespace std::chrono;
 
 int main() {
     Position pos;
-    int maxDepth = 8;
-    int timeLimitMs = 3500;
+    int maxDepth = 10;
+    int timeLimitMs = 3000;
     stack<UndoInfo> moveHistory;
 
     // Select game mode: human vs bot or bot vs bot
