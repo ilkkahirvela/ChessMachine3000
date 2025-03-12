@@ -6,10 +6,18 @@
 using namespace std;
 
 /**
- * @brief Player identifiers.
+ * @file chess.h
+ * @brief Contains utility functions and constants for chess game logic.
  *
- * Enum representing the two players in a chess game.
+ * This file defines enumerations for players and pieces, as well as helper functions to
+ * convert between representations and validate moves.
  */
+
+ /**
+  * @brief Player identifiers.
+  *
+  * Enum representing the two players in a chess game.
+  */
 enum Player : int { WHITE, BLACK };
 
 /**
@@ -58,18 +66,18 @@ Move uciToMove(const string& moveStr);
 /**
  * @brief Validates if a move is legal.
  *
- * Checks whether the provided move is present in the list of all generated legal moves.
+ * Checks whether the provided move exists in the list of all generated legal moves.
  *
  * @param allMoves A vector containing all legal moves.
  * @param playerMove The move to validate.
- * @return True if the move is valid, false otherwise.
+ * @return True if the move is found in the list of legal moves, false otherwise.
  */
 bool validMove(const vector<Move>& allMoves, Move playerMove);
 
 /**
  * @brief Returns the opponent's color.
  *
- * Given the current player's color, this function returns the color of the opponent.
+ * Given the current player's color, returns the opposing player's color.
  *
  * @param player The current player's color (WHITE or BLACK).
  * @return The opponent's color.

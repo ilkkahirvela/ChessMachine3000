@@ -1,9 +1,7 @@
+#include <iostream>
+#include <string>
 #include "position.h"
 #include "chess.h"
-#include <iostream>
-#include <utility>
-#include <vector>
-#include <string>
 
 using namespace std;
 

@@ -8,8 +8,6 @@
 
 #pragma once
 #include <vector>
-#include "move.h"
-#include "chess.h"
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -17,12 +15,21 @@
 #include <limits>
 #include <chrono>
 #include <exception>
+#include "move.h"
+#include "chess.h"
 
 using namespace std;
 using namespace std::chrono;
 
+/**
+ * @brief Exception class for handling time limit exceedance during search.
+ */
 class TimeLimitExceeded : public exception {
 public:
+    /**
+     * @brief Returns the error message.
+     * @return const char* C-string describing the exception.
+     */
     const char* what() const noexcept override {
         return "Time limit exceeded";
     }
@@ -84,7 +91,6 @@ struct UndoInfo {
     int rookToCol;      ///< The destination column of the rook during castling.
 };
 
-
 /**
  * @brief Class representing the state of the chessboard and move generation.
  *
@@ -124,176 +130,261 @@ public:
 
     /**
      * @brief Switches the turn to the other player.
+     *
+     * Changes _moveturn from WHITE to BLACK or vice versa.
      */
     void changeTurn();
 
     /**
      * @brief Determines the color of the piece at the given board coordinates.
-     * @param row The row index.
-     * @param column The column index.
-     * @return WHITE, BLACK, or -1 if the square is empty or invalid.
+     *
+     * @param row The row index of the board.
+     * @param column The column index of the board.
+     * @return int Returns WHITE, BLACK, or -1 if the square is empty or invalid.
      */
     int pieceColor(int row, int column) const;
 
     /**
-     * @brief Executes a move on the board.
-     * @param move The move to be executed.
-     * @return An UndoInfo structure containing the state before the move was applied.
+     * @brief Executes a move on the board and updates the game state.
+     *
+     * Moves a piece from its start position to its end position. Handles special cases such as
+     * en passant captures, pawn promotions, and castling moves. Returns an UndoInfo structure
+     * that captures the state prior to the move.
+     *
+     * @param move The move to execute.
+     * @return UndoInfo The state information necessary to undo this move.
      */
     UndoInfo movePiece(Move move);
 
     /**
      * @brief Undoes a previously executed move.
-     * @param move The move to be undone.
-     * @param undo The UndoInfo structure with the board state before the move.
+     *
+     * Reverts the board to its state before a move was executed, restoring any captured pieces,
+     * castling rights, and en passant eligibility.
+     *
+     * @param move The move to undo.
+     * @param undo The UndoInfo structure containing the previous state.
      */
     void undoMove(Move move, const UndoInfo& undo);
 
     /**
-     * @brief Generates moves in specified directions starting from a given square.
+     * @brief Generates moves in specified directions from a given square.
+     *
+     * Follows the provided directional offsets from the start square until an edge or a blocking piece is encountered.
+     *
      * @param row The starting row index.
      * @param column The starting column index.
-     * @param directions A vector of directional offsets.
+     * @param directions A vector of (row, column) offsets to follow.
      * @param moves A vector to which the generated moves are added.
      */
     void getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const;
 
     /**
-     * @brief Generates all legal rook moves from a given position.
-     * @param row The row of the rook.
-     * @param column The column of the rook.
-     * @param moves A vector to which the generated moves are added.
+     * @brief Generates all legal rook moves from the specified position.
+     *
+     * @param row The row index of the rook.
+     * @param column The column index of the rook.
+     * @param moves A vector to which the rook moves are appended.
      */
     void getRookMoves(int row, int column, vector<Move>& moves) const;
 
     /**
-     * @brief Generates all legal bishop moves from a given position.
-     * @param row The row of the bishop.
-     * @param column The column of the bishop.
-     * @param moves A vector to which the generated moves are added.
+     * @brief Generates all legal bishop moves from the specified position.
+     *
+     * @param row The row index of the bishop.
+     * @param column The column index of the bishop.
+     * @param moves A vector to which the bishop moves are appended.
      */
     void getBishopMoves(int row, int column, vector<Move>& moves) const;
 
     /**
-     * @brief Generates all legal queen moves from a given position.
-     * @param row The row of the queen.
-     * @param column The column of the queen.
-     * @param moves A vector to which the generated moves are added.
+     * @brief Generates all legal queen moves from the specified position.
+     *
+     * @param row The row index of the queen.
+     * @param column The column index of the queen.
+     * @param moves A vector to which the queen moves are appended.
      */
     void getQueenMoves(int row, int column, vector<Move>& moves) const;
 
     /**
-     * @brief Generates all legal king moves from a given position.
-     * @param row The row of the king.
-     * @param column The column of the king.
-     * @param moves A vector to which the generated moves are added.
+     * @brief Generates all legal king moves from the specified position.
+     *
+     * This includes both the standard one-square moves in any direction and the special castling moves.
+     *
+     * @param row The row index of the king.
+     * @param column The column index of the king.
+     * @param moves A vector to which the king moves are appended.
      */
     void getKingMoves(int row, int column, vector<Move>& moves) const;
 
     /**
-     * @brief Generates all legal knight moves from a given position.
-     * @param row The row of the knight.
-     * @param column The column of the knight.
-     * @param moves A vector to which the generated moves are added.
+     * @brief Generates all legal knight moves from the specified position.
+     *
+     * @param row The row index of the knight.
+     * @param column The column index of the knight.
+     * @param moves A vector to which the knight moves are appended.
      */
     void getKnightMoves(int row, int column, vector<Move>& moves) const;
 
     /**
-     * @brief Generates all legal pawn moves from a given position.
-     * @param row The row of the pawn.
-     * @param column The column of the pawn.
-     * @param piece The type of the pawn (wP or bP).
-     * @param moves A vector to which the generated moves are added.
+     * @brief Generates all legal pawn moves from the specified position.
+     *
+     * Computes forward moves, captures (including en passant), double moves from the starting rank,
+     * and pawn promotions.
+     *
+     * @param row The row index of the pawn.
+     * @param column The column index of the pawn.
+     * @param piece The pawn identifier (wP or bP).
+     * @param moves A vector to which the pawn moves are appended.
      * @param player The color of the player (WHITE or BLACK).
      */
     void getPawnMoves(int row, int column, int piece, vector<Move>& moves, int player) const;
 
     /**
-     * @brief Generates all moves for the current player.
+     * @brief Generates all possible moves for the current player.
+     *
+     * Iterates over the board and collects moves for all pieces belonging to the current player.
+     *
      * @param player The current player's color (WHITE or BLACK).
-     * @param moves A vector to which the generated moves are added.
+     * @param moves A vector to which all generated moves are added.
      */
     void getAllMoves(int player, vector<Move>& moves) const;
 
     /**
-     * @brief Filters the generated moves to keep only the legal ones.
-     * @param allMoves A vector containing all generated moves.
-     * @param legalMoves A vector to which the legal moves are added.
+     * @brief Filters a set of moves to retain only those that are legal.
+     *
+     * Checks each move by simulating it and verifying that the player's king is not left in check.
+     *
+     * @param allMoves A vector of moves generated from the board.
+     * @param legalMoves A vector to which the moves that do not leave the king in check are added.
      */
     void getLegalMoves(const vector<Move>& allMoves, vector<Move>& legalMoves);
 
     /**
-     * @brief Checks if a given square is under attack by the opponent.
+     * @brief Determines whether a given square is under attack by the opponent.
+     *
+     * Considers attacks from all piece types (pawn, knight, bishop, rook, queen, and king).
+     *
      * @param row The row index of the square.
      * @param col The column index of the square.
      * @param opponent The opponent's color (WHITE or BLACK).
-     * @return True if the square is under attack, false otherwise.
+     * @return bool True if the square is under attack; otherwise, false.
      */
     bool isSquareUnderAttack(int row, int col, int opponent) const;
 
     /**
-     * @brief Finds the king's position on the board.
-     * @param piece The king piece (wK or bK).
-     * @param row Reference to an integer where the king's row will be stored.
-     * @param column Reference to an integer where the king's column will be stored.
+     * @brief Locates the king on the board.
+     *
+     * Searches for the king piece (wK or bK) and outputs its coordinates via the provided references.
+     *
+     * @param piece The king identifier (wK or bK).
+     * @param row Reference variable to store the king's row index.
+     * @param column Reference variable to store the king's column index.
      */
     void findKing(int piece, int& row, int& column) const;
 
     /**
      * @brief Evaluates the current board position.
-     * @return A floating-point number representing the evaluation score of the board.
+     *
+     * Computes a score based on material balance and positional advantages using piece-square tables.
+     *
+     * @return float A floating-point score representing the board evaluation.
      */
     float evaluate() const;
 
     /**
-     * @brief Returns the score for a terminal game state.
-     * @param depth The search depth at which the game state was reached.
-     * @return A large positive number for a win, a large negative number for a loss, or zero for a draw.
+     * @brief Provides a terminal game state score.
+     *
+     * Returns a large positive value if the current player is in a winning mate position,
+     * a large negative value for a loss, or zero for a stalemate.
+     *
+     * @param depth The search depth at which the terminal state was reached (used for tie-breaking).
+     * @return float The evaluation score for the terminal state.
      */
     float endResultScore(int depth) const;
 
-    // scores moves for move ordering
+    /**
+     * @brief Scores a move for move ordering.
+     *
+     * Calculates a priority score for a move based on potential capture value, promotion, and other factors.
+     *
+     * @param move The move to be scored.
+     * @return int An integer representing the move's priority.
+     */
     int scoreMove(const Move& move) const;
 
+    /**
+     * @brief Orders a list of moves in descending order based on their score.
+     *
+     * Uses the scoreMove function to sort moves so that higher priority moves are evaluated first.
+     *
+     * @param moves The vector of moves to be ordered.
+     */
     void orderMoves(vector<Move>& moves) const;
 
     /**
      * @brief Executes a minimax search with alpha-beta pruning.
-     * @param depth The depth of the search.
-     * @param alpha The alpha value for pruning.
-     * @param beta The beta value for pruning.
-     * @param startTime The starting time point of the search.
-     * @param timeLimitMs The time limit in milliseconds.
-     * @return A MinimaxValue containing the best evaluation score and associated move.
+     *
+     * Recursively evaluates moves to a specified depth while pruning branches that cannot affect the final decision.
+     * A time limit is enforced; if exceeded, a TimeLimitExceeded exception is thrown.
+     *
+     * @param depth The maximum search depth.
+     * @param alpha The current alpha value for pruning.
+     * @param beta The current beta value for pruning.
+     * @param startTime The time point when the search started.
+     * @param timeLimitMs The time limit in milliseconds for the search.
+     * @return MinimaxValue The best evaluation score and associated move.
+     * @throws TimeLimitExceeded if the search time exceeds the allowed limit.
      */
     MinimaxValue minimax(int depth, float alpha, float beta, const std::chrono::steady_clock::time_point& startTime, int timeLimitMs);
 
-    // New parallel version to be used at the root level :
-    MinimaxValue parallelMinimax(int depth, const std::chrono::steady_clock::time_point & startTime, int timeLimitMs);
+    /**
+     * @brief Executes a parallel minimax search at the root level.
+     *
+     * Uses asynchronous tasks to evaluate each legal move concurrently, then selects the best move.
+     *
+     * @param depth The maximum search depth.
+     * @param startTime The time point when the search started.
+     * @param timeLimitMs The time limit in milliseconds for the search.
+     * @return MinimaxValue The best move found along with its evaluation score.
+     * @throws TimeLimitExceeded if the search exceeds the allowed time limit.
+     */
+    MinimaxValue parallelMinimax(int depth, const std::chrono::steady_clock::time_point& startTime, int timeLimitMs);
 
     /**
-     * @brief Performs iterative deepening using minimax search.
-     * @param maxDepth The maximum search depth.
-     * @param timeLimitMs The time limit in milliseconds.
-     * @return A MinimaxValue containing the best evaluation score and associated move.
+     * @brief Performs iterative deepening using the minimax search.
+     *
+     * Repeatedly increases the search depth (up to maxDepth) while using parallel search at the root.
+     * This allows a move to be returned quickly if time is constrained.
+     *
+     * @param maxDepth The maximum depth to search.
+     * @param timeLimitMs The time limit in milliseconds for the search.
+     * @return MinimaxValue The best move found and its corresponding evaluation score.
      */
     MinimaxValue iterativeDeepening(int maxDepth, int timeLimitMs);
 
     /**
      * @brief Clears the board by setting all squares to empty.
+     *
+     * Resets the board state by marking every square as having no piece.
      */
     void emptyBoard();
 
     /**
-     * @brief Inserts a test piece at the specified location.
-     * @param r The row index.
-     * @param c The column index.
-     * @param piece The piece to insert.
+     * @brief Inserts a test piece at a specified location on the board.
+     *
+     * Mainly used for testing or debugging, this function places a given piece at the indicated row and column.
+     *
+     * @param r The row index for the test piece.
+     * @param c The column index for the test piece.
+     * @param piece The piece identifier to insert.
      */
     void insertTestPiece(int r, int c, int piece);
 
     /**
-     * @brief Prints the board to the console.
+     * @brief Prints the current board state to the console.
+     *
+     * Outputs a visual representation of the chessboard including file (a-h) and rank (1-8) labels.
      */
     void printBoard() const;
 };
