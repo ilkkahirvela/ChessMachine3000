@@ -31,7 +31,9 @@ using namespace std::chrono;
 int main() {
     Position pos;
     string playerInput;
-    int playerSide, botSide;
+    int playerSide;
+    int maxDepth = 8;
+    int timeLimitMs = 3500;
 
     cout << "Choose your color (white/0 or black/1): ";
     cin >> playerInput;
@@ -114,7 +116,7 @@ int main() {
         else {
             // Bot's turn: use iterative deepening minimax search
             auto start = steady_clock::now();
-            MinimaxValue minimax = pos.iterativeDeepening(8, 3000);
+            MinimaxValue minimax = pos.iterativeDeepening(maxDepth, timeLimitMs);
             cout << "Minimax value of the move made: " << minimax._value << endl;
 
             UndoInfo undoData = pos.movePiece(minimax._move);
