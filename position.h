@@ -21,6 +21,13 @@
 using namespace std;
 using namespace std::chrono;
 
+class TimeLimitExceeded : public exception {
+public:
+    const char* what() const noexcept override {
+        return "Time limit exceeded";
+    }
+};
+
 /**
  * @brief Class representing the result of a minimax search.
  *
@@ -77,12 +84,6 @@ struct UndoInfo {
     int rookToCol;      ///< The destination column of the rook during castling.
 };
 
-class TimeLimitExceeded : public exception {
-public:
-    const char* what() const noexcept override {
-        return "Time limit exceeded";
-    }
-};
 
 /**
  * @brief Class representing the state of the chessboard and move generation.

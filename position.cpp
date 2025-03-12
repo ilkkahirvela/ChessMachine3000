@@ -661,7 +661,7 @@ int Position::scoreMove(const Move& move) const {
 
 // Sorts moves in descending order of score.
 void Position::orderMoves(vector<Move>& moves) const {
-    std::sort(moves.begin(), moves.end(), [this](const Move& a, const Move& b) {
+    sort(moves.begin(), moves.end(), [this](const Move& a, const Move& b) {
         return scoreMove(a) > scoreMove(b);
         });
 }
@@ -763,13 +763,14 @@ MinimaxValue Position::parallelMinimax(int depth, const steady_clock::time_point
     vector<Move> legalMoves;
     legalMoves.reserve(100);
     getLegalMoves(allMoves, legalMoves);
-    orderMoves(legalMoves);
 
     // Terminal conditions.
     if (legalMoves.empty())
         return { endResultScore(depth), Move() };
     if (depth == 0)
         return { evaluate(), Move() };
+
+    orderMoves(legalMoves);
 
     vector<future<MinimaxValue>> futures;
     futures.reserve(legalMoves.size());
