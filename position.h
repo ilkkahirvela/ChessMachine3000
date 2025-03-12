@@ -77,6 +77,13 @@ struct UndoInfo {
     int rookToCol;      ///< The destination column of the rook during castling.
 };
 
+class TimeLimitExceeded : public exception {
+public:
+    const char* what() const noexcept override {
+        return "Time limit exceeded";
+    }
+};
+
 /**
  * @brief Class representing the state of the chessboard and move generation.
  *
@@ -243,6 +250,10 @@ public:
      * @return A large positive number for a win, a large negative number for a loss, or zero for a draw.
      */
     float endResultScore(int depth) const;
+
+    int scoreMove(const Move& move) const;
+
+    void orderMoves(vector<Move>& moves) const;
 
     /**
      * @brief Executes a minimax search with alpha-beta pruning.

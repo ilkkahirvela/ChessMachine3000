@@ -622,12 +622,49 @@ float Position::endResultScore(int depth) const {
     }
 }
 
-class TimeLimitExceeded : public exception {
-public:
-    const char* what() const noexcept override {
-        return "Time limit exceeded";
+// Returns an integer score for the move.
+// Higher scores indicate moves that should be searched first.
+int Position::scoreMove(const Move& move) const {
+    auto getPieceValue = [](int piece) -> int {
+        switch (piece) {
+        case wP: return 100;
+        case wN: return 320;
+        case wB: return 330;
+        case wR: return 500;
+        case wQ: return 900;
+        case wK: return 20000;
+        case bP: return 100;
+        case bN: return 320;
+        case bB: return 330;
+        case bR: return 500;
+        case bQ: return 900;
+        case bK: return 20000;
+        default: return 0;
+        }
+        };
+
+    int score = 0;
+    int movingPiece = _board[move.startRow][move.startCol];
+    int targetPiece = _board[move.endRow][move.endCol];
+
+    // Capture bonus.
+    if (targetPiece != NA) {
+        score += 10000;
+        score += getPieceValue(targetPiece) - getPieceValue(movingPiece);
     }
-};
+    // Promotion bonus.
+    if (move.promotion != NA) {
+        score += 8000;
+    }
+    return score;
+}
+
+// Sorts moves in descending order of score.
+void Position::orderMoves(vector<Move>& moves) const {
+    std::sort(moves.begin(), moves.end(), [this](const Move& a, const Move& b) {
+        return scoreMove(a) > scoreMove(b);
+        });
+}
 
 // Minimax with time limit
 MinimaxValue Position::minimax(int depth, float alpha, float beta,
@@ -646,6 +683,7 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta,
     vector<Move> legalMoves;
     legalMoves.reserve(100);
     getLegalMoves(allMoves, legalMoves);
+    orderMoves(legalMoves);
 
     // Terminal conditions.
     if (legalMoves.empty())
@@ -718,13 +756,14 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta,
 
 MinimaxValue Position::parallelMinimax(int depth, const steady_clock::time_point& startTime, int timeLimitMs) {
     // Generate all possible moves for the current position.
-    std::vector<Move> allMoves;
+    vector<Move> allMoves;
     allMoves.reserve(100);
     getAllMoves(_moveturn, allMoves);
 
-    std::vector<Move> legalMoves;
+    vector<Move> legalMoves;
     legalMoves.reserve(100);
     getLegalMoves(allMoves, legalMoves);
+    orderMoves(legalMoves);
 
     // Terminal conditions.
     if (legalMoves.empty())
@@ -732,13 +771,12 @@ MinimaxValue Position::parallelMinimax(int depth, const steady_clock::time_point
     if (depth == 0)
         return { evaluate(), Move() };
 
-    // Prepare for parallel processing.
-    std::vector<std::future<MinimaxValue>> futures;
+    vector<future<MinimaxValue>> futures;
     futures.reserve(legalMoves.size());
 
-    // Spawn async tasks for each legal move.
+    // Async tasks for each legal move.
     for (const auto& move : legalMoves) {
-        futures.push_back(std::async(std::launch::async, [this, move, depth, startTime, timeLimitMs]() -> MinimaxValue {
+        futures.push_back(async(launch::async, [this, move, depth, startTime, timeLimitMs]() -> MinimaxValue {
             Position posCopy(*this);
             UndoInfo undo = posCopy.movePiece(move);
             posCopy.changeTurn();
@@ -809,12 +847,12 @@ MinimaxValue Position::iterativeDeepening(int maxDepth, int timeLimitMs) {
 
             auto currentTime = clock::now();
             int elapsedMs = duration_cast<milliseconds>(currentTime - startTime).count();
-            std::cout << "Depth: " << depth
+            cout << "Depth: " << depth
                 << " | Best Value: " << result._value
-                << " | Elapsed: " << elapsedMs << "ms" << std::endl;
+                << " | Elapsed: " << elapsedMs << "ms" << endl;
         }
         catch (TimeLimitExceeded& e) {
-            std::cout << "Time limit exceeded at depth " << depth << std::endl;
+            cout << "Time limit exceeded at depth " << depth << endl;
             break;
         }
     }

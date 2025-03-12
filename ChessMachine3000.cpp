@@ -1,9 +1,14 @@
 /**
  * @file main.cpp
- * @brief Entry point for the chess program.
+ * @brief Main program for chess with human vs bot and bot vs bot game modes.
  *
- * This file sets up the chess board, handles user input, and alternates moves between the player and the bot.
- * The bot uses an iterative deepening minimax search with alpha-beta pruning.
+ * At startup, the user selects the game mode:
+ * - Human vs Bot (enter "h"): The human chooses a color (white/0 or black/1) and plays against the bot.
+ * - Bot vs Bot (enter "b"): Both sides are controlled by bots.
+ *
+ * The program uses iterative deepening minimax search with alpha-beta pruning.
+ * The termination condition checks for checkmate by locating the king
+ * using findKing and testing if its square is under attack with isSquareUnderAttack.
  */
 
 #include <iostream>
@@ -12,6 +17,7 @@
 #include <chrono>
 #include <stack>
 #include <algorithm>
+#include <thread>
 #include "chess.h"
 #include "move.h"
 #include "position.h"
@@ -19,79 +25,97 @@
 using namespace std;
 using namespace std::chrono;
 
-/**
- * @brief Main function that runs the chess game.
- *
- * The program asks the user to choose a color and then enters an infinite loop,
- * alternating between processing the player's move and the bot's move. It displays the current board,
- * available moves, and position evaluation. The user can also enter "undo" to revert the last two moves.
- *
- * @return int Exit code.
- */
 int main() {
     Position pos;
-    string playerInput;
-    int playerSide;
     int maxDepth = 8;
     int timeLimitMs = 3500;
-
-    cout << "Choose your color (white/0 or black/1): ";
-    cin >> playerInput;
-
-    // Convert input to lowercase
-    transform(playerInput.begin(), playerInput.end(), playerInput.begin(), ::tolower);
-
-    // Determine player's side based on input
-    if (playerInput == "white" || playerInput == "0") {
-        playerSide = WHITE;
-    }
-    else if (playerInput == "black" || playerInput == "1") {
-        playerSide = BLACK;
-    }
-    else {
-        cout << "Invalid input. Defaulting to white." << endl;
-        playerSide = WHITE;
-    }
-
-    vector<Move> allMoves, legalMoves;
-    Move playerMove;
     stack<UndoInfo> moveHistory;
 
+    // Select game mode: human vs bot or bot vs bot
+    char gameMode;
+    cout << "Select game mode: (h)uman vs bot or (b)ot vs bot: ";
+    cin >> gameMode;
+
+    bool humanMode = false;
+    int humanSide = -1; // Will be set to WHITE or BLACK if human mode
+
+    if (gameMode == 'h' || gameMode == 'H') {
+        humanMode = true;
+        string sideInput;
+        cout << "Choose your color (w)hite or (b)lack: ";
+        cin >> sideInput;
+        if (sideInput == "w" || sideInput == "W") {
+            humanSide = WHITE;
+        }
+        else if (sideInput == "b" || sideInput == "B") {
+            humanSide = BLACK;
+        }
+        else {
+            cout << "Invalid input. Defaulting to white." << endl;
+            humanSide = WHITE;
+        }
+    }
+    else if (!(gameMode == 'b' || gameMode == 'B')) {
+        // If invalid selection, default to human vs bot with white
+        cout << "Invalid selection. Defaulting to human vs bot, playing white." << endl;
+        humanMode = true;
+        humanSide = WHITE;
+    }
+
+    // Main game loop
     while (true) {
-        if (pos._moveturn == playerSide) {
-            allMoves.clear();
-            legalMoves.clear();
+        cout << "Current board:" << endl;
+        pos.printBoard();
 
-            // Generate and filter moves for the current player
-            pos.getAllMoves(pos._moveturn, allMoves);
-            pos.getLegalMoves(allMoves, legalMoves);
+        // Generate legal moves for the current side
+        vector<Move> allMoves, legalMoves;
+        pos.getAllMoves(pos._moveturn, allMoves);
+        pos.getLegalMoves(allMoves, legalMoves);
 
-            cout << "Current board:" << endl;
-            pos.printBoard();
+        // Check for game termination (checkmate or stalemate)
+        if (legalMoves.empty()) {
+            int kingRow, kingCol;
+            int kingPiece = (pos._moveturn == WHITE ? wK : bK);
+            pos.findKing(kingPiece, kingRow, kingCol);
+            int opponent = (pos._moveturn == WHITE ? BLACK : WHITE);
+            if (pos.isSquareUnderAttack(kingRow, kingCol, opponent)) {
+                cout << "Checkmate! ";
+                if (pos._moveturn == WHITE) {
+                    cout << "Black wins!" << endl;
+                }
+                else {
+                    cout << "White wins!" << endl;
+                }
+            }
+            else {
+                cout << "Stalemate!" << endl;
+            }
+            break;
+        }
 
-            // Display available legal moves
+        // Determine if it is the human's turn (only in human vs bot mode)
+        if (humanMode && pos._moveturn == humanSide) {
+            cout << "Legal moves: ";
             for (const auto& move : legalMoves)
                 cout << move.toString() << " ";
-            cout << endl << "Total possible moves: " << legalMoves.size() << endl;
+            cout << "\nTotal moves: " << legalMoves.size() << endl;
 
-            cout << "Position score balance: " << pos.evaluate() << endl;
-
-            cout << "Enter your move in UCI format (or type 'undo' to revert last moves): ";
-            string stringMove;
-            cin >> stringMove;
+            cout << "Enter your move in UCI format (or type 'undo' to revert last two moves): ";
+            string inputMove;
+            cin >> inputMove;
             cout << "\n";
 
             // Handle undo command
-            if (stringMove == "undo") {
+            if (inputMove == "undo") {
                 if (moveHistory.size() >= 2) {
                     UndoInfo botUndo = moveHistory.top(); moveHistory.pop();
                     Move botMove = botUndo.move;
                     pos.undoMove(botMove, botUndo);
                     pos.changeTurn();
 
-                    UndoInfo playerUndo = moveHistory.top(); moveHistory.pop();
-                    Move playerMove = playerUndo.move;
-                    pos.undoMove(playerMove, playerUndo);
+                    UndoInfo humanUndo = moveHistory.top(); moveHistory.pop();
+                    Move humanMove = humanUndo.move;
+                    pos.undoMove(humanMove, humanUndo);
                     pos.changeTurn();
 
                     cout << "Undo successful. Reverted last two moves.\n";
@@ -102,10 +126,10 @@ int main() {
                 continue;
             }
 
-            // Convert UCI string to Move object and validate move
-            playerMove = uciToMove(stringMove);
-            if (validMove(legalMoves, playerMove)) {
-                UndoInfo undoData = pos.movePiece(playerMove);
+            // Convert UCI string to Move and validate it
+            Move humanMove = uciToMove(inputMove);
+            if (validMove(legalMoves, humanMove)) {
+                UndoInfo undoData = pos.movePiece(humanMove);
                 moveHistory.push(undoData);
                 pos.changeTurn();
             }
@@ -114,21 +138,26 @@ int main() {
             }
         }
         else {
-            // Bot's turn: use iterative deepening minimax search
+            // Bot's turn (or both sides in bot vs bot mode)
             auto start = steady_clock::now();
             MinimaxValue minimax = pos.iterativeDeepening(maxDepth, timeLimitMs);
-            cout << "Minimax value of the move made: " << minimax._value << endl;
+            auto end = steady_clock::now();
+            duration<double> elapsed = end - start;
+
+            cout << "Bot (" << (pos._moveturn == WHITE ? "White" : "Black")
+                << ") plays move: " << minimax._move.toString()
+                << " (" << elapsed.count() << " seconds)" << endl;
 
             UndoInfo undoData = pos.movePiece(minimax._move);
             moveHistory.push(undoData);
 
-            auto end = steady_clock::now();
-            duration<double> elapsed = end - start;
-
-            cout << "The bot did the move: " << minimax._move.toString()
-                << " in " << elapsed.count() << " seconds." << endl;
+            cout << "Position evaluation: " << pos.evaluate() << endl;
+            cout << "----------------------------------------" << endl;
 
             pos.changeTurn();
+
+            // Short delay before the next move
+            this_thread::sleep_for(chrono::milliseconds(1000));
         }
     }
 
