@@ -33,7 +33,7 @@ int main() {
 
     // Select game mode: human vs bot or bot vs bot
     char gameMode;
-    cout << "Select game mode: (h)uman vs bot or (b)ot vs bot: ";
+    cout << "\033[33mSelect game mode: (h)uman vs bot or (b)ot vs bot: \033[0m";
     cin >> gameMode;
 
     bool humanMode = false;
@@ -42,7 +42,7 @@ int main() {
     if (gameMode == 'h' || gameMode == 'H') {
         humanMode = true;
         string sideInput;
-        cout << "Choose your color (w)hite or (b)lack: ";
+        cout << "\033[33mChoose your color (w)hite or (b)lack: \033[0m";
         cin >> sideInput;
         if (sideInput == "w" || sideInput == "W") {
             humanSide = WHITE;
@@ -100,7 +100,7 @@ int main() {
                 cout << move.toString() << " ";
             cout << "\nTotal moves: " << legalMoves.size() << endl;
 
-            cout << "Enter your move in UCI format (or type 'undo' to revert last two moves): ";
+            cout << "\033[33mEnter your move in UCI format (or type 'undo' to revert last two moves): \033[0m";
             string inputMove;
             cin >> inputMove;
             cout << "\n";
