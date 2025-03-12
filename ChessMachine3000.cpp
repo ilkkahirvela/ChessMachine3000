@@ -145,7 +145,7 @@ int main() {
             duration<double> elapsed = end - start;
 
             cout << "Bot (" << (pos._moveturn == WHITE ? "White" : "Black")
-                << ") plays move: " << minimax._move.toString()
+                << ") plays move: " << "\033[31m" << minimax._move.toString() << "\033[0m"
                 << " (" << elapsed.count() << " seconds)" << endl;
 
             UndoInfo undoData = pos.movePiece(minimax._move);
