@@ -3,8 +3,6 @@
 #include <vector>
 #include "move.h"
 
-using namespace std;
-
 /**
  * @file chess.h
  * @brief Contains utility functions and constants for chess game logic.
@@ -33,14 +31,14 @@ enum Piece : int { wR, wN, wB, wQ, wK, wP, bR, bN, bB, bQ, bK, bP, NA };
  *
  * A vector of piece constants that a white pawn can be promoted to.
  */
-static const vector<int> whitePromotions{ wR, wN, wB, wQ };
+static const std::vector<int> whitePromotions{ wR, wN, wB, wQ };
 
 /**
  * @brief Promotion pieces for black.
  *
  * A vector of piece constants that a black pawn can be promoted to.
  */
-static const vector<int> blackPromotions{ bR, bN, bB, bQ };
+static const std::vector<int> blackPromotions{ bR, bN, bB, bQ };
 
 /**
  * @brief Returns the printable representation of a chess piece.
@@ -51,7 +49,7 @@ static const vector<int> blackPromotions{ bR, bN, bB, bQ };
  * @param piece The chess piece constant.
  * @return A string representing the piece.
  */
-string pieceIndicator(int piece);
+std::string pieceIndicator(int piece);
 
 /**
  * @brief Converts a UCI-formatted move string to a Move object.
@@ -61,7 +59,7 @@ string pieceIndicator(int piece);
  * @param moveStr The move string in UCI format.
  * @return A Move object corresponding to the move string.
  */
-Move uciToMove(const string& moveStr);
+Move uciToMove(const std::string& moveStr);
 
 /**
  * @brief Validates if a move is legal.
@@ -72,7 +70,7 @@ Move uciToMove(const string& moveStr);
  * @param playerMove The move to validate.
  * @return True if the move is found in the list of legal moves, false otherwise.
  */
-bool validMove(const vector<Move>& allMoves, Move playerMove);
+bool validMove(const std::vector<Move>& allMoves, Move playerMove);
 
 /**
  * @brief Returns the opponent's color.

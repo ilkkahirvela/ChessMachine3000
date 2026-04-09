@@ -69,18 +69,18 @@ int main() {
 
         // Generate legal moves for the current side
         vector<Move> allMoves, legalMoves;
-        pos.getAllMoves(pos._moveturn, allMoves);
+        pos.getAllMoves(pos.getTurn(), allMoves);
         pos.getLegalMoves(allMoves, legalMoves);
 
         // Check for game termination (checkmate or stalemate)
         if (legalMoves.empty()) {
             int kingRow, kingCol;
-            int kingPiece = (pos._moveturn == WHITE ? wK : bK);
+            int kingPiece = (pos.getTurn() == WHITE ? wK : bK);
             pos.findKing(kingPiece, kingRow, kingCol);
-            int opponent = (pos._moveturn == WHITE ? BLACK : WHITE);
+            int opponent = (pos.getTurn() == WHITE ? BLACK : WHITE);
             if (pos.isSquareUnderAttack(kingRow, kingCol, opponent)) {
                 cout << "Checkmate! ";
-                if (pos._moveturn == WHITE) {
+                if (pos.getTurn() == WHITE) {
                     cout << "Black wins!" << endl;
                 }
                 else {
@@ -94,7 +94,7 @@ int main() {
         }
 
         // Determine if it is the human's turn (only in human vs bot mode)
-        if (humanMode && pos._moveturn == humanSide) {
+        if (humanMode && pos.getTurn() == humanSide) {
             cout << "Legal moves: ";
             for (const auto& move : legalMoves)
                 cout << move.toString() << " ";
@@ -144,7 +144,7 @@ int main() {
             auto end = steady_clock::now();
             duration<double> elapsed = end - start;
 
-            cout << "Bot (" << (pos._moveturn == WHITE ? "White" : "Black")
+            cout << "Bot (" << (pos.getTurn() == WHITE ? "White" : "Black")
                 << ") plays move: " << "\033[31m" << minimax._move.toString() << "\033[0m"
                 << " (" << elapsed.count() << " seconds)" << endl;
 

@@ -8,23 +8,15 @@
 
 #pragma once
 #include <vector>
-#include <iostream>
-#include <iomanip>
-#include <vector>
-#include <cmath>
-#include <limits>
 #include <chrono>
 #include <exception>
 #include "move.h"
 #include "chess.h"
 
-using namespace std;
-using namespace std::chrono;
-
 /**
  * @brief Exception class for handling time limit exceedance during search.
  */
-class TimeLimitExceeded : public exception {
+class TimeLimitExceeded : public std::exception {
 public:
     /**
      * @brief Returns the error message.
@@ -70,7 +62,7 @@ struct UndoInfo {
     Move move;   ///< The move that was executed.
     int movedPiece;  ///< The piece that was moved.
     int capturedPiece;  ///< The piece that was captured (if any).
-    pair<int, int> capturedPieceSquare;  ///< The board coordinates of the captured piece.
+    std::pair<int, int> capturedPieceSquare;  ///< The board coordinates of the captured piece.
     bool enPassantCapture;  ///< True if the move was an en passant capture.
 
     // Castling rights
@@ -81,7 +73,7 @@ struct UndoInfo {
     bool blackKingsideRookMoved;      ///< True if the black kingside rook has moved.
     bool blackQueensideRookMoved;     ///< True if the black queenside rook has moved.
 
-    pair<int, int> enPassantSquare;  ///< The square eligible for en passant capture.
+    std::pair<int, int> enPassantSquare;  ///< The square eligible for en passant capture.
 
     // Castling move details
     bool castlingMove;  ///< True if the move was a castling move.
@@ -110,11 +102,11 @@ private:
         { wR, wN, wB, wQ, wK, wB, wN, wR }
     };
 
-    static const vector<pair<int, int>> _knightOffsets;   ///< Offsets for knight moves.
-    static const vector<pair<int, int>> _rookDirections;    ///< Directions for rook moves.
-    static const vector<pair<int, int>> _bishopDirections;  ///< Directions for bishop moves.
-    static const vector<pair<int, int>> _queenDirections;   ///< Directions for queen moves.
-    static const vector<pair<int, int>> _kingMoves;         ///< Moves available to the king.
+    static const std::vector<std::pair<int, int>> _knightOffsets;   ///< Offsets for knight moves.
+    static const std::vector<std::pair<int, int>> _rookDirections;    ///< Directions for rook moves.
+    static const std::vector<std::pair<int, int>> _bishopDirections;  ///< Directions for bishop moves.
+    static const std::vector<std::pair<int, int>> _queenDirections;   ///< Directions for queen moves.
+    static const std::vector<std::pair<int, int>> _kingMoves;         ///< Moves available to the king.
 
     bool _whiteKingMoved = false;         ///< True if the white king has moved.
     bool _whiteKingsideRookMoved = false; ///< True if the white kingside rook has moved.
@@ -123,10 +115,16 @@ private:
     bool _blackKingsideRookMoved = false; ///< True if the black kingside rook has moved.
     bool _blackQueensideRookMoved = false;///< True if the black queenside rook has moved.
 
-    pair<int, int> _enPassantSquare = { -1, -1 }; ///< Square available for an en passant capture.
+    std::pair<int, int> _enPassantSquare = { -1, -1 }; ///< Square available for an en passant capture.
+
+    int _moveturn = WHITE;  ///< Indicates whose turn it is: WHITE or BLACK.
 
 public:
-    int _moveturn = WHITE;  ///< Indicates whose turn it is: WHITE or BLACK.
+    /**
+     * @brief Returns the current player's turn.
+     * @return int WHITE or BLACK.
+     */
+    int getTurn() const { return _moveturn; }
 
     /**
      * @brief Switches the turn to the other player.
@@ -177,7 +175,7 @@ public:
      * @param directions A vector of (row, column) offsets to follow.
      * @param moves A vector to which the generated moves are added.
      */
-    void getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const;
+    void getDirectionalMoves(int row, int column, const std::vector<std::pair<int, int>>& directions, std::vector<Move>& moves) const;
 
     /**
      * @brief Generates all legal rook moves from the specified position.
@@ -186,7 +184,7 @@ public:
      * @param column The column index of the rook.
      * @param moves A vector to which the rook moves are appended.
      */
-    void getRookMoves(int row, int column, vector<Move>& moves) const;
+    void getRookMoves(int row, int column, std::vector<Move>& moves) const;
 
     /**
      * @brief Generates all legal bishop moves from the specified position.
@@ -195,7 +193,7 @@ public:
      * @param column The column index of the bishop.
      * @param moves A vector to which the bishop moves are appended.
      */
-    void getBishopMoves(int row, int column, vector<Move>& moves) const;
+    void getBishopMoves(int row, int column, std::vector<Move>& moves) const;
 
     /**
      * @brief Generates all legal queen moves from the specified position.
@@ -204,7 +202,7 @@ public:
      * @param column The column index of the queen.
      * @param moves A vector to which the queen moves are appended.
      */
-    void getQueenMoves(int row, int column, vector<Move>& moves) const;
+    void getQueenMoves(int row, int column, std::vector<Move>& moves) const;
 
     /**
      * @brief Generates all legal king moves from the specified position.
@@ -215,7 +213,7 @@ public:
      * @param column The column index of the king.
      * @param moves A vector to which the king moves are appended.
      */
-    void getKingMoves(int row, int column, vector<Move>& moves) const;
+    void getKingMoves(int row, int column, std::vector<Move>& moves) const;
 
     /**
      * @brief Generates all legal knight moves from the specified position.
@@ -224,7 +222,7 @@ public:
      * @param column The column index of the knight.
      * @param moves A vector to which the knight moves are appended.
      */
-    void getKnightMoves(int row, int column, vector<Move>& moves) const;
+    void getKnightMoves(int row, int column, std::vector<Move>& moves) const;
 
     /**
      * @brief Generates all legal pawn moves from the specified position.
@@ -238,7 +236,7 @@ public:
      * @param moves A vector to which the pawn moves are appended.
      * @param player The color of the player (WHITE or BLACK).
      */
-    void getPawnMoves(int row, int column, int piece, vector<Move>& moves, int player) const;
+    void getPawnMoves(int row, int column, int piece, std::vector<Move>& moves, int player) const;
 
     /**
      * @brief Generates all possible moves for the current player.
@@ -248,7 +246,7 @@ public:
      * @param player The current player's color (WHITE or BLACK).
      * @param moves A vector to which all generated moves are added.
      */
-    void getAllMoves(int player, vector<Move>& moves) const;
+    void getAllMoves(int player, std::vector<Move>& moves) const;
 
     /**
      * @brief Filters a set of moves to retain only those that are legal.
@@ -258,7 +256,7 @@ public:
      * @param allMoves A vector of moves generated from the board.
      * @param legalMoves A vector to which the moves that do not leave the king in check are added.
      */
-    void getLegalMoves(const vector<Move>& allMoves, vector<Move>& legalMoves);
+    void getLegalMoves(const std::vector<Move>& allMoves, std::vector<Move>& legalMoves);
 
     /**
      * @brief Determines whether a given square is under attack by the opponent.
@@ -320,7 +318,7 @@ public:
      *
      * @param moves The vector of moves to be ordered.
      */
-    void orderMoves(vector<Move>& moves) const;
+    void orderMoves(std::vector<Move>& moves) const;
 
     /**
      * @brief Executes a minimax search with alpha-beta pruning.
@@ -350,6 +348,7 @@ public:
      * @throws TimeLimitExceeded if the search exceeds the allowed time limit.
      */
     MinimaxValue parallelMinimax(int depth, const std::chrono::steady_clock::time_point& startTime, int timeLimitMs);
+
 
     /**
      * @brief Performs iterative deepening using the minimax search.

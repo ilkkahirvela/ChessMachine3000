@@ -9,8 +9,6 @@
 #pragma once
 #include <string>
 
-using namespace std;
-
 /**
  * @brief Represents a chess move.
  *
@@ -68,5 +66,5 @@ public:
      *
      * @return string A string that represents the move.
      */
-    string toString() const;
+    std::string toString() const;
 };
