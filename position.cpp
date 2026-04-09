@@ -869,6 +869,19 @@ MinimaxValue Position::iterativeDeepening(int maxDepth, int timeLimitMs) {
     return bestResult;
 }
 
+int Position::getMaterialBalance() const {
+    // Standard values: P=1, N=3, B=3, R=5, Q=9 — indexed by Piece enum order
+    static const int values[] = { 5, 3, 3, 9, 0, 1, 5, 3, 3, 9, 0, 1, 0 };
+    int balance = 0;
+    for (int r = 0; r < 8; ++r)
+        for (int c = 0; c < 8; ++c) {
+            int piece = _board[r][c];
+            if (piece == NA) continue;
+            balance += (piece <= wP ? 1 : -1) * values[piece];
+        }
+    return balance;
+}
+
 std::string Position::getPositionKey() const {
     std::string key;
     key.reserve(64 + 1 + 6 + 2);

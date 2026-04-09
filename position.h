@@ -129,6 +129,7 @@ public:
      */
     int getTurn() const { return _moveturn; }
     int getHalfMoveClock() const { return _halfMoveClock; }
+    int getMaterialBalance() const;
 
     /**
      * @brief Returns a string key uniquely identifying the current position.
