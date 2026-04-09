@@ -7,6 +7,7 @@
  */
 
 #pragma once
+#include <string>
 #include <vector>
 #include <chrono>
 #include <exception>
@@ -74,6 +75,7 @@ struct UndoInfo {
     bool blackQueensideRookMoved;     ///< True if the black queenside rook has moved.
 
     std::pair<int, int> enPassantSquare;  ///< The square eligible for en passant capture.
+    int halfMoveClock;  ///< Half-move clock before this move (for 50-move rule).
 
     // Castling move details
     bool castlingMove;  ///< True if the move was a castling move.
@@ -116,6 +118,7 @@ private:
     bool _blackQueensideRookMoved = false;///< True if the black queenside rook has moved.
 
     std::pair<int, int> _enPassantSquare = { -1, -1 }; ///< Square available for an en passant capture.
+    int _halfMoveClock = 0; ///< Increments each move, resets on pawn move or capture (50-move rule).
 
     int _moveturn = WHITE;  ///< Indicates whose turn it is: WHITE or BLACK.
 
@@ -125,6 +128,15 @@ public:
      * @return int WHITE or BLACK.
      */
     int getTurn() const { return _moveturn; }
+    int getHalfMoveClock() const { return _halfMoveClock; }
+
+    /**
+     * @brief Returns a string key uniquely identifying the current position.
+     *
+     * Encodes the board, turn, castling rights, and en passant square.
+     * Used for threefold repetition detection.
+     */
+    std::string getPositionKey() const;
 
     /**
      * @brief Switches the turn to the other player.

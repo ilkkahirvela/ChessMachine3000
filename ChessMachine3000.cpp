@@ -18,6 +18,7 @@
 #include <stack>
 #include <algorithm>
 #include <thread>
+#include <unordered_map>
 #include "chess.h"
 #include "move.h"
 #include "position.h"
@@ -30,6 +31,7 @@ int main() {
     int maxDepth = 10;
     int timeLimitMs = 3000;
     stack<UndoInfo> moveHistory;
+    unordered_map<string, int> positionHistory;
 
     // Select game mode: human vs bot or bot vs bot
     char gameMode;
@@ -71,6 +73,21 @@ int main() {
         vector<Move> allMoves, legalMoves;
         pos.getAllMoves(pos.getTurn(), allMoves);
         pos.getLegalMoves(allMoves, legalMoves);
+
+        // Check for draw by 50-move rule
+        if (pos.getHalfMoveClock() >= 100) {
+            pos.printBoard();
+            cout << "Draw by 50-move rule!" << endl;
+            break;
+        }
+
+        // Check for draw by threefold repetition
+        string posKey = pos.getPositionKey();
+        if (++positionHistory[posKey] >= 3) {
+            pos.printBoard();
+            cout << "Draw by threefold repetition!" << endl;
+            break;
+        }
 
         // Check for game termination (checkmate or stalemate)
         if (legalMoves.empty()) {

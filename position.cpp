@@ -77,11 +77,16 @@ UndoInfo Position::movePiece(Move move) {
     undo.enPassantSquare = _enPassantSquare;
 
     undo.castlingMove = false;
+    undo.halfMoveClock = _halfMoveClock;
 
     int piece = undo.movedPiece;
 
-    // Clear en passant
+    // Clear en passant, then set it if this is a double pawn push
     _enPassantSquare = { -1, -1 };
+    if (piece == wP && move.startRow == 6 && move.endRow == 4)
+        _enPassantSquare = { 5, move.startCol };
+    else if (piece == bP && move.startRow == 1 && move.endRow == 3)
+        _enPassantSquare = { 2, move.startCol };
 
     // Handle en passant capture
     bool isEnPassant = (piece == wP || piece == bP) &&
@@ -153,6 +158,11 @@ UndoInfo Position::movePiece(Move move) {
         }
     }
 
+    // Update half-move clock: reset on pawn move or capture, increment otherwise
+    bool isPawnMove = (piece == wP || piece == bP);
+    bool isCapture = (undo.capturedPiece != NA || undo.enPassantCapture);
+    _halfMoveClock = (isPawnMove || isCapture) ? 0 : _halfMoveClock + 1;
+
     return undo;
 }
 
@@ -174,7 +184,7 @@ void Position::undoMove(Move move, const UndoInfo& undo) {
         _board[undo.rookToRow][undo.rookToCol] = NA;
     }
 
-    // Restore castling rights and en passant square.
+    // Restore castling rights, en passant square, and half-move clock.
     _whiteKingMoved = undo.whiteKingMoved;
     _whiteKingsideRookMoved = undo.whiteKingsideRookMoved;
     _whiteQueensideRookMoved = undo.whiteQueensideRookMoved;
@@ -182,6 +192,7 @@ void Position::undoMove(Move move, const UndoInfo& undo) {
     _blackKingsideRookMoved = undo.blackKingsideRookMoved;
     _blackQueensideRookMoved = undo.blackQueensideRookMoved;
     _enPassantSquare = undo.enPassantSquare;
+    _halfMoveClock = undo.halfMoveClock;
 }
 
 void Position::getDirectionalMoves(int row, int column, const vector<pair<int, int>>& directions, vector<Move>& moves) const {
@@ -856,6 +867,33 @@ MinimaxValue Position::iterativeDeepening(int maxDepth, int timeLimitMs) {
         }
     }
     return bestResult;
+}
+
+std::string Position::getPositionKey() const {
+    std::string key;
+    key.reserve(64 + 1 + 6 + 2);
+
+    // Board state (64 bytes)
+    for (int r = 0; r < 8; ++r)
+        for (int c = 0; c < 8; ++c)
+            key += static_cast<char>(_board[r][c]);
+
+    // Turn
+    key += static_cast<char>(_moveturn);
+
+    // Castling rights
+    key += static_cast<char>(_whiteKingMoved);
+    key += static_cast<char>(_whiteKingsideRookMoved);
+    key += static_cast<char>(_whiteQueensideRookMoved);
+    key += static_cast<char>(_blackKingMoved);
+    key += static_cast<char>(_blackKingsideRookMoved);
+    key += static_cast<char>(_blackQueensideRookMoved);
+
+    // En passant square
+    key += static_cast<char>(_enPassantSquare.first + 1);   // offset by 1 so -1 becomes 0
+    key += static_cast<char>(_enPassantSquare.second + 1);
+
+    return key;
 }
 
 // --- BOARD VISUALISATION ---
