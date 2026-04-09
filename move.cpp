@@ -17,8 +17,8 @@ Move::Move(int startRow, int startCol, int endRow, int endCol, int promotion)
 
 string Move::toString() const {
     // Convert board coordinates to standard chess notation.
-    char startFile = 'a' + startCol;
-    char endFile = 'a' + endCol;
+    char startFile = static_cast<char>('a' + startCol);
+    char endFile = static_cast<char>('a' + endCol);
     int startRank = 8 - startRow;
     int endRank = 8 - endRow;
 

@@ -669,7 +669,7 @@ MinimaxValue Position::minimax(int depth, float alpha, float beta,
     const chrono::steady_clock::time_point& startTime, int timeLimitMs) {
 
     auto currentTime = chrono::steady_clock::now();
-    int elapsedMs = chrono::duration_cast<chrono::milliseconds>(currentTime - startTime).count();
+    int elapsedMs = static_cast<int>(chrono::duration_cast<chrono::milliseconds>(currentTime - startTime).count());
     if (elapsedMs >= timeLimitMs) {
         throw TimeLimitExceeded();
     }
@@ -845,12 +845,12 @@ MinimaxValue Position::iterativeDeepening(int maxDepth, int timeLimitMs) {
             bestResult = result;
 
             auto currentTime = clock::now();
-            int elapsedMs = duration_cast<milliseconds>(currentTime - startTime).count();
+            int elapsedMs = static_cast<int>(duration_cast<milliseconds>(currentTime - startTime).count());
             cout << "Depth: " << depth
                 << " | Best Value: " << result._value
                 << " | Elapsed: " << elapsedMs << "ms" << endl;
         }
-        catch (TimeLimitExceeded& e) {
+        catch (TimeLimitExceeded&) {
             cout << "Time limit exceeded at depth " << depth << endl;
             break;
         }
