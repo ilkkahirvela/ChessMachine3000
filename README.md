@@ -67,7 +67,7 @@ x64\Release\ChessMachine3000.exe
 ## How to Play
 
 ### Settings menu
-At startup you will see a settings menu. Press keys to change options — no Enter needed.
+At startup you will see a settings menu. Press keys to change options.
 
 | Key | Setting |
 |-----|---------|
