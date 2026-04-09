@@ -12,6 +12,8 @@
  */
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <chrono>
@@ -65,9 +67,25 @@ int main() {
     }
 
     // Main game loop
+    Move lastMove;
+    int fullMoveNumber = 1;
+
     while (true) {
-        cout << "Current board:" << endl;
-        pos.printBoard();
+        // Clear screen and print header
+        cout << "\033[2J\033[H";
+        cout << "\033[1m=== ChessMachine3000 ===\033[0m";
+        cout << "  Move " << fullMoveNumber;
+        cout << "  |  \033[1m" << (pos.getTurn() == WHITE ? "White" : "Black") << " to play\033[0m";
+        if (lastMove.startRow != -1)
+            cout << "  |  Last: \033[1;33m" << lastMove.toString() << "\033[0m";
+        cout << "\n";
+
+        int halfClock = pos.getHalfMoveClock();
+        cout << "50-move clock: " << halfClock << "/100";
+        if (halfClock >= 80) cout << "  \033[1;31m(!)\033[0m";
+        cout << "\n\n";
+
+        pos.printBoard(lastMove);
 
         // Generate legal moves for the current side
         vector<Move> allMoves, legalMoves;
@@ -76,105 +94,109 @@ int main() {
 
         // Check for draw by 50-move rule
         if (pos.getHalfMoveClock() >= 100) {
-            pos.printBoard();
-            cout << "Draw by 50-move rule!" << endl;
+            cout << "\033[1;33mDraw by 50-move rule!\033[0m\n";
             break;
         }
 
         // Check for draw by threefold repetition
         string posKey = pos.getPositionKey();
         if (++positionHistory[posKey] >= 3) {
-            pos.printBoard();
-            cout << "Draw by threefold repetition!" << endl;
+            cout << "\033[1;33mDraw by threefold repetition!\033[0m\n";
             break;
         }
 
-        // Check for game termination (checkmate or stalemate)
+        // Check for checkmate or stalemate
         if (legalMoves.empty()) {
             int kingRow, kingCol;
             int kingPiece = (pos.getTurn() == WHITE ? wK : bK);
             pos.findKing(kingPiece, kingRow, kingCol);
-            int opponent = (pos.getTurn() == WHITE ? BLACK : WHITE);
-            if (pos.isSquareUnderAttack(kingRow, kingCol, opponent)) {
-                cout << "Checkmate! ";
-                if (pos.getTurn() == WHITE) {
-                    cout << "Black wins!" << endl;
-                }
-                else {
-                    cout << "White wins!" << endl;
-                }
+            int opp = (pos.getTurn() == WHITE ? BLACK : WHITE);
+            if (pos.isSquareUnderAttack(kingRow, kingCol, opp)) {
+                cout << "\033[1;31mCheckmate!  "
+                     << (pos.getTurn() == WHITE ? "Black" : "White")
+                     << " wins!\033[0m\n";
             }
             else {
-                cout << "Stalemate!" << endl;
+                cout << "\033[1;33mStalemate! Draw.\033[0m\n";
             }
             break;
         }
 
-        // Determine if it is the human's turn (only in human vs bot mode)
+        // Human's turn
         if (humanMode && pos.getTurn() == humanSide) {
-            cout << "Legal moves: ";
+            cout << "Legal moves (" << legalMoves.size() << "): ";
             for (const auto& move : legalMoves)
                 cout << move.toString() << " ";
-            cout << "\nTotal moves: " << legalMoves.size() << endl;
+            cout << "\n\n";
 
-            cout << "\033[33mEnter your move in UCI format (or type 'undo' to revert last two moves): \033[0m";
+            cout << "\033[33mYour move (UCI, or 'undo'): \033[0m";
             string inputMove;
             cin >> inputMove;
-            cout << "\n";
 
-            // Handle undo command
             if (inputMove == "undo") {
                 if (moveHistory.size() >= 2) {
                     UndoInfo botUndo = moveHistory.top(); moveHistory.pop();
-                    Move botMove = botUndo.move;
-                    pos.undoMove(botMove, botUndo);
+                    pos.undoMove(botUndo.move, botUndo);
                     pos.changeTurn();
 
                     UndoInfo humanUndo = moveHistory.top(); moveHistory.pop();
-                    Move humanMove = humanUndo.move;
-                    pos.undoMove(humanMove, humanUndo);
+                    pos.undoMove(humanUndo.move, humanUndo);
                     pos.changeTurn();
 
-                    cout << "Undo successful. Reverted last two moves.\n";
+                    lastMove = moveHistory.empty() ? Move() : moveHistory.top().move;
+                    if (fullMoveNumber > 1) fullMoveNumber--;
                 }
                 else {
-                    cout << "No moves to undo.\n";
+                    cout << "\033[1;31mNo moves to undo.\033[0m\n";
+                    this_thread::sleep_for(chrono::milliseconds(800));
                 }
                 continue;
             }
 
-            // Convert UCI string to Move and validate it
             Move humanMove = uciToMove(inputMove);
             if (validMove(legalMoves, humanMove)) {
                 UndoInfo undoData = pos.movePiece(humanMove);
                 moveHistory.push(undoData);
+                lastMove = humanMove;
+                if (pos.getTurn() == BLACK) fullMoveNumber++;
                 pos.changeTurn();
             }
             else {
-                cout << "Invalid move. Try again." << endl;
+                cout << "\033[1;31mInvalid move. Try again.\033[0m\n";
+                this_thread::sleep_for(chrono::milliseconds(800));
             }
         }
         else {
-            // Bot's turn (or both sides in bot vs bot mode)
+            // Bot's turn
+            string side = (pos.getTurn() == WHITE ? "White" : "Black");
+            cout << "Bot (" << side << ") is thinking...\n";
+
             auto start = steady_clock::now();
-            MinimaxValue minimax = pos.iterativeDeepening(maxDepth, timeLimitMs);
-            auto end = steady_clock::now();
-            duration<double> elapsed = end - start;
+            MinimaxValue result = pos.iterativeDeepening(maxDepth, timeLimitMs);
+            auto end_time = steady_clock::now();
+            double elapsed = duration<double>(end_time - start).count();
 
-            cout << "Bot (" << (pos.getTurn() == WHITE ? "White" : "Black")
-                << ") plays move: " << "\033[31m" << minimax._move.toString() << "\033[0m"
-                << " (" << elapsed.count() << " seconds)" << endl;
+            cout << "\n\033[1;32m>>> " << side << " plays: "
+                 << result._move.toString() << " <<<\033[0m"
+                 << "  (" << fixed << setprecision(2) << elapsed << "s)\n";
 
-            UndoInfo undoData = pos.movePiece(minimax._move);
+            float eval = pos.evaluate();
+            cout << "Eval: ";
+            if (eval > 1.0f)
+                cout << "\033[1;97mWhite\033[0m +" << fixed << setprecision(1) << eval;
+            else if (eval < -1.0f)
+                cout << "\033[1;96mBlack\033[0m +" << fixed << setprecision(1) << -eval;
+            else
+                cout << "Equal";
+            cout << "\n";
+
+            UndoInfo undoData = pos.movePiece(result._move);
             moveHistory.push(undoData);
-
-            cout << "Position evaluation: " << pos.evaluate() << endl;
-            cout << "----------------------------------------" << endl;
-
+            lastMove = result._move;
+            if (pos.getTurn() == BLACK) fullMoveNumber++;
             pos.changeTurn();
 
-            // Short delay before the next move
-            this_thread::sleep_for(chrono::milliseconds(1000));
+            this_thread::sleep_for(chrono::milliseconds(600));
         }
     }
 

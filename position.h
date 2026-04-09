@@ -397,5 +397,5 @@ public:
      *
      * Outputs a visual representation of the chessboard including file (a-h) and rank (1-8) labels.
      */
-    void printBoard() const;
+    void printBoard(Move lastMove = Move()) const;
 };

@@ -857,12 +857,12 @@ MinimaxValue Position::iterativeDeepening(int maxDepth, int timeLimitMs) {
 
             auto currentTime = clock::now();
             int elapsedMs = static_cast<int>(duration_cast<milliseconds>(currentTime - startTime).count());
-            cout << "Depth: " << depth
-                << " | Best Value: " << result._value
-                << " | Elapsed: " << elapsedMs << "ms" << endl;
+            cout << "\rDepth: " << depth
+                << " | Best: " << fixed << setprecision(1) << result._value
+                << " | Elapsed: " << elapsedMs << "ms      " << flush;
         }
         catch (TimeLimitExceeded&) {
-            cout << "Time limit exceeded at depth " << depth << endl;
+            cout << "\rTime limit reached at depth " << depth << "                  " << flush;
             break;
         }
     }
@@ -909,41 +909,37 @@ void Position::insertTestPiece(int r, int c, int piece) {
     _board[r][c] = piece;
 }
 
-void Position::printBoard() const {
-    const int boardSize = 8;
-    cout << "    ";
-    for (char file = 'a'; file <= 'h'; ++file) {
-        cout << file << "   ";  // Spacing between file labels
-    }
-    cout << endl;
+void Position::printBoard(Move lastMove) const {
+    // True color (24-bit RGB) — theme-independent
+    const char* RESET       = "\033[0m";
+    const char* WHITE_PIECE = "\033[1;38;2;255;200;0m";    // bold gold
+    const char* BLACK_PIECE = "\033[1;38;2;80;210;210m";   // bold teal
+    const char* HL_FROM     = "\033[48;2;140;60;20m";      // dark orange-brown bg
+    const char* HL_TO       = "\033[48;2;30;120;30m";      // dark green bg
 
-    cout << "  +";
-    for (int i = 0; i < boardSize; i++) {
-        cout << "----";
-    }
-    cout << "+" << endl;
+    auto sep = []() { cout << "  +---+---+---+---+---+---+---+---+\n"; };
 
-    for (int r = 0; r < boardSize; r++) {
-        cout << 8 - r << " | ";
+    cout << "    a   b   c   d   e   f   g   h\n";
+    sep();
 
-        for (int c = 0; c < boardSize; c++) {
-            cout << setw(2) << pieceIndicator(_board[r][c]) << " |";
+    for (int r = 0; r < 8; r++) {
+        cout << 8 - r << " |";
+        for (int c = 0; c < 8; c++) {
+            bool isFrom = (r == lastMove.startRow && c == lastMove.startCol);
+            bool isTo   = (r == lastMove.endRow   && c == lastMove.endCol);
+            int piece   = _board[r][c];
+
+            if      (isTo)   cout << HL_TO;
+            else if (isFrom) cout << HL_FROM;
+
+            if      (piece >= wR && piece <= wP) cout << WHITE_PIECE;
+            else if (piece >= bR && piece <= bP) cout << BLACK_PIECE;
+
+            string sym = (piece == NA) ? "." : pieceIndicator(piece);
+            cout << " " << sym << " " << RESET << "|";
         }
-
-        cout << endl;
-
-        if (r < boardSize - 1) {
-            cout << "  +";
-            for (int i = 0; i < boardSize; i++) {
-                cout << "----";
-            }
-            cout << "+" << endl;
-        }
+        cout << " " << 8 - r << "\n";
+        sep();
     }
-
-    cout << "  +";
-    for (int i = 0; i < boardSize; i++) {
-        cout << "----";
-    }
-    cout << "+" << endl;
+    cout << "    a   b   c   d   e   f   g   h\n\n";
 }
