@@ -12,6 +12,10 @@ A terminal-based chess engine written in C++. Play against the bot or watch two 
 - Full chess rules: castling, en passant, pawn promotion, 50-move rule, threefold repetition
 - Material balance and check indicator in the UI
 
+## Documentation
+
+Full API documentation is available at **[ilkkahirvela.github.io/ChessMachine3000](https://ilkkahirvela.github.io/ChessMachine3000/)**.
+
 ## Download
 
 A pre-built Windows executable is available on the [Releases](../../releases/latest) page — no installation or build tools required. Download `ChessMachine3000.exe` and run it directly.
