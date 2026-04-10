@@ -1,3 +1,9 @@
+/**
+ * @file move.cpp
+ * @brief Implements the Move class defined in move.h.
+ *
+ * Contains constructors and the toString() method for the Move class.
+ */
 #include <string>
 #include <iostream>
 #include "move.h"

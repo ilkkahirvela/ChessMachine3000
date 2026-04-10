@@ -125,10 +125,30 @@ private:
 public:
     /**
      * @brief Returns the current player's turn.
+     *
      * @return int WHITE or BLACK.
      */
     int getTurn() const { return _moveturn; }
+
+    /**
+     * @brief Returns the current half-move clock value.
+     *
+     * The half-move clock increments each half-move and resets on a pawn move or capture.
+     * It is used to enforce the 50-move draw rule (draw at 100 half-moves).
+     *
+     * @return int The current half-move clock count.
+     */
     int getHalfMoveClock() const { return _halfMoveClock; }
+
+    /**
+     * @brief Returns the material balance from White's perspective.
+     *
+     * Calculates the difference in total piece values between White and Black
+     * using standard piece values (P=1, N=3, B=3, R=5, Q=9).
+     * A positive value means White has more material; negative means Black does.
+     *
+     * @return int The material balance (White minus Black).
+     */
     int getMaterialBalance() const;
 
     /**

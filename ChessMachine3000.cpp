@@ -1,5 +1,5 @@
 /**
- * @file main.cpp
+ * @file ChessMachine3000.cpp
  * @brief Main program for chess with human vs bot and bot vs bot game modes.
  *
  * At startup, the user selects the game mode:
@@ -26,6 +26,16 @@
 using namespace std;
 using namespace std::chrono;
 
+/**
+ * @brief Entry point for ChessMachine3000.
+ *
+ * Presents a settings menu where the user selects game mode (Human vs Bot or Bot vs Bot),
+ * side (White/Black), bot think time, and whether to display legal moves. After configuration
+ * the game loop runs until checkmate, stalemate, or a draw condition (50-move rule or
+ * threefold repetition) is reached, then returns to the menu.
+ *
+ * @return int Returns 0 on normal exit.
+ */
 int main() {
     bool humanMode      = true;
     int  humanSide      = WHITE;

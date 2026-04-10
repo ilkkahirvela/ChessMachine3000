@@ -1,3 +1,10 @@
+/**
+ * @file chess.cpp
+ * @brief Implements utility functions declared in chess.h.
+ *
+ * Contains the implementations of pieceIndicator(), uciToMove(),
+ * validMove(), and opponent().
+ */
 #include <iostream>
 #include <string>
 #include "position.h"

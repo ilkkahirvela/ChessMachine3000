@@ -12,12 +12,13 @@ A terminal-based chess engine written in C++. Play against the bot or watch two 
 - Full chess rules: castling, en passant, pawn promotion, 50-move rule, threefold repetition
 - Material balance and check indicator in the UI
 
-## Requirements
+## Download
 
-- Windows
-- Visual Studio 2022 (for the compiler and build tools)
+A pre-built Windows executable is available on the [Releases](../../releases/latest) page — no installation or build tools required. Download `ChessMachine3000.exe` and run it directly.
 
-## Building
+## Building from source
+
+**Requirements:** Windows, Visual Studio 2022
 
 ### Visual Studio
 Open `ChessMachine3000.sln`, set the configuration to **Release** and platform to **x64** in the toolbar, then press **Ctrl+Shift+B**.

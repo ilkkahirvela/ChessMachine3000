@@ -1,3 +1,11 @@
+/**
+ * @file position.cpp
+ * @brief Implements the Position class defined in position.h.
+ *
+ * Contains all board-state management, move generation, legal-move filtering,
+ * static board evaluation, minimax search with alpha-beta pruning, parallel
+ * root search, and iterative deepening.
+ */
 #include <iostream>
 #include <iomanip>
 #include <vector>
