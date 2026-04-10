@@ -43,7 +43,7 @@ x64\Release\ChessMachine3000.exe
         {
             "label": "Build Release",
             "type": "shell",
-            "command": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe",
+            "command": "C:\\Program Files\\Microsoft Visual Studio\\2022\\<Edition>\\MSBuild\\Current\\Bin\\MSBuild.exe",
             "args": [ "ChessMachine3000.sln", "/p:Configuration=Release", "/p:Platform=x64" ],
             "group": { "kind": "build", "isDefault": true },
             "problemMatcher": "$msCompile"
