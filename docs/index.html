@@ -111,19 +111,22 @@ Features</h1>
 <li>Material balance and check indicator in the UI</li>
 </ul>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
-Download</h1>
-<p>A pre-built Windows executable is available on the <a href="../../releases/latest">Releases</a> page — no installation or build tools required. Download <span class="tt">ChessMachine3000.exe</span> and run it directly.</p>
+Documentation</h1>
+<p>Full API documentation is available at <b><a href="https://ilkkahirvela.github.io/ChessMachine3000/">ilkkahirvela.github.io/ChessMachine3000</a></b>.</p>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+Download</h1>
+<p>A pre-built Windows executable is available on the <a href="https://github.com/ilkkahirvela/ChessMachine3000/releases/latest">Releases</a> page — no installation or build tools required. Download <span class="tt">ChessMachine3000.exe</span> and run it directly.</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
 Building from source</h1>
 <p><b>Requirements:</b> Windows, Visual Studio 2022</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
 Visual Studio</h2>
 <p>Open <span class="tt">ChessMachine3000.sln</span>, set the configuration to <b>Release</b> and platform to <b>x64</b> in the toolbar, then press <b>Ctrl+Shift+B</b>.</p>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
 Command line</h2>
 <div class="fragment"><div class="line">MSBuild ChessMachine3000.sln /p:Configuration=Release /p:Platform=x64</div>
 <div class="line">x64\Release\ChessMachine3000.exe</div>
-</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
 Visual Studio Code</h2>
 <ol type="1">
 <li>Install the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools">C/C++ extension</a></li>
@@ -157,9 +160,9 @@ Visual Studio Code</h2>
 </div><!-- fragment --></li>
 <li>Press <b>F5</b> to build and run.</li>
 </ol>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
 How to Play</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
 Settings menu</h2>
 <p>At startup you will see a settings menu. Press keys to change options.</p>
 <table class="markdownTable">
@@ -178,13 +181,13 @@ Settings menu</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><span class="tt">Q</span>  </td><td class="markdownTableBodyNone">Quit  </td></tr>
 </table>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
 Move input</h2>
 <p>Moves are entered in <b>UCI format</b>: from-square followed by to-square.</p>
 <div class="fragment"><div class="line">e2e4    move pawn from e2 to e4</div>
 <div class="line">g1f3    move knight from g1 to f3</div>
 <div class="line">e7e8q   pawn promotion to queen</div>
-</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
+</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
 In-game commands</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -194,7 +197,7 @@ In-game commands</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><span class="tt">quit</span>  </td><td class="markdownTableBodyNone">Return to the settings menu  </td></tr>
 </table>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md11"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
 Engine</h1>
 <p>The bot uses <b>iterative deepening minimax</b> with <b>alpha-beta pruning</b>. At each depth it searches legal moves in parallel at the root, with move ordering (captures and promotions first) to improve pruning in the sequential search below. </p>
 </div></div><!-- PageDoc -->

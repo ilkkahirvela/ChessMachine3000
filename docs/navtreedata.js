@@ -26,18 +26,19 @@ var NAVTREE =
 [
   [ "ChessMachine3000", "index.html", [
     [ "Features", "index.html#autotoc_md1", null ],
-    [ "Download", "index.html#autotoc_md2", null ],
-    [ "Building from source", "index.html#autotoc_md3", [
-      [ "Visual Studio", "index.html#autotoc_md4", null ],
-      [ "Command line", "index.html#autotoc_md5", null ],
-      [ "Visual Studio Code", "index.html#autotoc_md6", null ]
+    [ "Documentation", "index.html#autotoc_md2", null ],
+    [ "Download", "index.html#autotoc_md3", null ],
+    [ "Building from source", "index.html#autotoc_md4", [
+      [ "Visual Studio", "index.html#autotoc_md5", null ],
+      [ "Command line", "index.html#autotoc_md6", null ],
+      [ "Visual Studio Code", "index.html#autotoc_md7", null ]
     ] ],
-    [ "How to Play", "index.html#autotoc_md7", [
-      [ "Settings menu", "index.html#autotoc_md8", null ],
-      [ "Move input", "index.html#autotoc_md9", null ],
-      [ "In-game commands", "index.html#autotoc_md10", null ]
+    [ "How to Play", "index.html#autotoc_md8", [
+      [ "Settings menu", "index.html#autotoc_md9", null ],
+      [ "Move input", "index.html#autotoc_md10", null ],
+      [ "In-game commands", "index.html#autotoc_md11", null ]
     ] ],
-    [ "Engine", "index.html#autotoc_md11", null ],
+    [ "Engine", "index.html#autotoc_md12", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],

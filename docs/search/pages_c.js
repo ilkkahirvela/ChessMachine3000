@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['to_20play_0',['How to Play',['../index.html#autotoc_md7',1,'']]]
+  ['to_20play_0',['How to Play',['../index.html#autotoc_md8',1,'']]]
 ];

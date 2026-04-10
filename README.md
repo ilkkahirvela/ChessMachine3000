@@ -18,7 +18,7 @@ Full API documentation is available at **[ilkkahirvela.github.io/ChessMachine300
 
 ## Download
 
-A pre-built Windows executable is available on the [Releases](../../releases/latest) page — no installation or build tools required. Download `ChessMachine3000.exe` and run it directly.
+A pre-built Windows executable is available on the [Releases](https://github.com/ilkkahirvela/ChessMachine3000/releases/latest) page — no installation or build tools required. Download `ChessMachine3000.exe` and run it directly.
 
 ## Building from source
 

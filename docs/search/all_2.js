@@ -8,7 +8,7 @@ var searchData=
   ['chess_2eh_5',['chess.h',['../chess_8h.html',1,'']]],
   ['chessmachine3000_6',['ChessMachine3000',['../index.html',1,'']]],
   ['chessmachine3000_2ecpp_7',['ChessMachine3000.cpp',['../_chess_machine3000_8cpp.html',1,'']]],
-  ['code_8',['Visual Studio Code',['../index.html#autotoc_md6',1,'']]],
-  ['command_20line_9',['Command line',['../index.html#autotoc_md5',1,'']]],
-  ['commands_10',['In-game commands',['../index.html#autotoc_md10',1,'']]]
+  ['code_8',['Visual Studio Code',['../index.html#autotoc_md7',1,'']]],
+  ['command_20line_9',['Command line',['../index.html#autotoc_md6',1,'']]],
+  ['commands_10',['In-game commands',['../index.html#autotoc_md11',1,'']]]
 ];

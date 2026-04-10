@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['game_20commands_0',['In-game commands',['../index.html#autotoc_md10',1,'']]],
+  ['game_20commands_0',['In-game commands',['../index.html#autotoc_md11',1,'']]],
   ['getallmoves_1',['getAllMoves',['../class_position.html#ae062d1ee1d594dcecf8d56d8b9e05e50',1,'Position']]],
   ['getbishopmoves_2',['getBishopMoves',['../class_position.html#a3e94f9a0cbdc173fd7ad6b3f8aa71eab',1,'Position']]],
   ['getdirectionalmoves_3',['getDirectionalMoves',['../class_position.html#abf9e94ab0c3e45eda326dfe83ef8f619',1,'Position']]],

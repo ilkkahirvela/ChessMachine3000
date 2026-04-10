@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['game_20commands_0',['In-game commands',['../index.html#autotoc_md10',1,'']]]
+  ['game_20commands_0',['In-game commands',['../index.html#autotoc_md11',1,'']]]
 ];

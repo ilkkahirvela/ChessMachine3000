@@ -4,7 +4,7 @@ var searchData=
   ['piece_1',['Piece',['../chess_8h.html#a59614ea3d5d71808202a9b5b86d8a142',1,'chess.h']]],
   ['piececolor_2',['pieceColor',['../class_position.html#ac63b6653b8498cf0562be71e0b4910b1',1,'Position']]],
   ['pieceindicator_3',['pieceIndicator',['../chess_8cpp.html#a5d6d0181b89d3649a5611e78dbb90d2b',1,'pieceIndicator(int piece):&#160;chess.cpp'],['../chess_8h.html#a53b248ab2f63970c40a48b384b51e23a',1,'pieceIndicator(int piece):&#160;chess.cpp']]],
-  ['play_4',['How to Play',['../index.html#autotoc_md7',1,'']]],
+  ['play_4',['How to Play',['../index.html#autotoc_md8',1,'']]],
   ['player_5',['Player',['../chess_8h.html#ac4010fd14386bd7af134a7c936db519c',1,'chess.h']]],
   ['position_6',['Position',['../class_position.html',1,'']]],
   ['position_2ecpp_7',['position.cpp',['../position_8cpp.html',1,'']]],
