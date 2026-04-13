@@ -2,6 +2,10 @@
 
 A terminal-based chess engine written in C++. Play against the bot or watch two bots play each other.
 
+![Bot vs Bot](media/bot-vs-bot.gif)
+
+> *Bot vs Bot, 1 second think time*
+
 ## Features
 
 - Human vs Bot and Bot vs Bot modes
@@ -72,6 +76,9 @@ x64\Release\ChessMachine3000.exe
 ## How to Play
 
 ### Settings menu
+
+![Settings](media/settings.png)
+
 At startup you will see a settings menu. Press keys to change options.
 
 | Key | Setting |
