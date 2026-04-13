@@ -102,3 +102,7 @@ e7e8q   pawn promotion to queen
 ## Engine
 
 The bot uses **iterative deepening minimax** with **alpha-beta pruning**. At each depth it searches legal moves in parallel at the root, with move ordering (captures and promotions first) to improve pruning in the sequential search below.
+
+## License
+
+MIT, see [LICENSE](LICENSE)
